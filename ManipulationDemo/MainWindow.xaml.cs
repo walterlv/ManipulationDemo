@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace ManipulationDemo
 {
@@ -16,6 +18,13 @@ namespace ManipulationDemo
         {
             InitializeComponent();
             this.RemoveIcon();
+
+            _timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _timer.Tick += OnTick;
+            _timer.Start();
         }
 
         private Storyboard StylusDownStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.StylusDown");
@@ -30,6 +39,16 @@ namespace ManipulationDemo
         private Storyboard ManipulationStartedStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.ManipulationStarted");
         private Storyboard ManipulationDeltaStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.ManipulationDelta");
         private Storyboard ManipulationCompletedStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.ManipulationCompleted");
+
+        private readonly DispatcherTimer _timer;
+
+        private void OnTick(object sender, EventArgs e)
+        {
+            var value = typeof(InputManager).Assembly
+                .TypeOf("StylusLogic")
+                .Get<bool>("IsStylusAndTouchSupportEnabled");
+            IsStylusAndTouchSupportEnabledRun.Text = value.ToString();
+        }
 
         private void OnStylusDown(object sender, StylusDownEventArgs e)
         {
