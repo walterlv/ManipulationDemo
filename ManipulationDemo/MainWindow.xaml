@@ -143,10 +143,13 @@
         <TextBlock x:Name="HwndMsgTextBlock" IsHitTestVisible="False"
                    HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8"/>
         <TextBlock x:Name="PropertiesTextBlock" IsHitTestVisible="False"
-                   HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="8">
+                   HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                   Margin="8" TextAlignment="Right">
+            <Run Text="PimcManager.TabletCount ="/>
+            <Run x:Name="PimcManagerTabletCountRun"/>
+            <LineBreak/>
             <Run Text="StylusLogic.IsStylusAndTouchSupportEnabled ="/>
             <Run x:Name="IsStylusAndTouchSupportEnabledRun"/>
-            <!--<LineBreak/>-->
         </TextBlock>
         <CheckBox HorizontalAlignment="Center" VerticalAlignment="Bottom"
                   Margin="16 8" Content="IsManipulationEnabled"

@@ -27,20 +27,6 @@ namespace ManipulationDemo
             };
             _timer.Tick += OnTick;
             _timer.Start();
-
-            DebugPimc();
-        }
-
-        private void DebugPimc()
-        {
-            var tablets = new TouchTabletCollection();
-            for (int ix = 0; ix < tablets.Count; ++ix)
-            {
-                Console.WriteLine("Found tablet {0} named {1}", ix + 1, tablets[ix].Name);
-                Console.WriteLine("  Type = {0}, Multi-touch supported = {1}", tablets[ix].Kind, tablets[ix].IsMultiTouch);
-                Console.WriteLine("  Input rectangle  = {0}", tablets[ix].InputRectangle);
-                Console.WriteLine("  Screen rectangle = {0}", tablets[ix].ScreenRectangle);
-            }
         }
 
         private Storyboard StylusDownStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.StylusDown");
@@ -70,6 +56,14 @@ namespace ManipulationDemo
             catch (Exception ex)
             {
                 IsStylusAndTouchSupportEnabledRun.Text = ex.ToString();
+            }
+            try
+            {
+                PimcManagerTabletCountRun.Text = new TouchTabletCollection().Count.ToString();
+            }
+            catch (Exception ex)
+            {
+                PimcManagerTabletCountRun.Text = ex.ToString();
             }
         }
 
