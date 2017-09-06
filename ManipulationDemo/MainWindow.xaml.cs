@@ -1,5 +1,8 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media.Animation;
 
 namespace ManipulationDemo
@@ -92,5 +95,86 @@ namespace ManipulationDemo
         {
             ManipulationCompletedStoryboard.Begin();
         }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            var source = (HwndSource) PresentationSource.FromVisual(this);
+            source?.AddHook(HwndHook);
+        }
+
+        private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
+        {
+            if (UnnecessaryMsgs.Contains(msg))
+            {
+                return IntPtr.Zero;
+            }
+            if (KwownMsgs.TryGetValue(msg, out var name))
+            {
+                HwndMsgTextBlock.Text += $"{name}{Environment.NewLine}";
+            }
+            else
+            {
+                HwndMsgTextBlock.Text += $"{msg}{Environment.NewLine}";
+            }
+            return IntPtr.Zero;
+        }
+
+        private static readonly List<int> UnnecessaryMsgs = new List<int>
+        {
+            3,
+            5,
+            6,
+            7,
+            8,
+            13,
+            15,
+            19,
+            20,
+            24,
+            25,
+            28,
+            31,
+            32,
+            36,
+            61,
+            70,
+            71,
+            124,
+            125,
+            127,
+            131,
+            132,
+            133,
+            134,
+            160,
+            161,
+            174,
+            274,
+            356,
+            512,
+            522,
+            526,
+            532,
+            533,
+            534,
+            561,
+            562,
+            641,
+            642,
+            674,
+            675,
+            725,
+            799,
+            49283,
+            49343,
+            49586,
+        };
+
+        private static readonly Dictionary<int, string> KwownMsgs = new Dictionary<int, string>
+        {
+            {513, "WM_LBUTTONDOWN"},
+            {514, "WM_LBUTTONUP"},
+        };
     }
 }

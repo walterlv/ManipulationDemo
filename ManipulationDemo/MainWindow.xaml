@@ -140,6 +140,8 @@
                 <TextBlock Text="ManipulationCompleted"/>
             </Border>
         </UniformGrid>
+        <TextBlock x:Name="HwndMsgTextBlock" IsHitTestVisible="False"
+                   VerticalAlignment="Bottom" Margin="8"/>
         <CheckBox HorizontalAlignment="Center" VerticalAlignment="Bottom"
                   Margin="16 8" Content="IsManipulationEnabled"
                   IsChecked="{Binding IsManipulationEnabled, ElementName=DrawingArea, Mode=TwoWay}"/>
