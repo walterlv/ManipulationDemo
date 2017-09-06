@@ -4,9 +4,144 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ManipulationDemo"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        mc:Ignorable="d" Title="触摸以监视">
     <Grid>
-        
+        <Rectangle x:Name="DrawingArea" Fill="White"
+                   PreviewStylusDown="OnStylusDown"
+                   PreviewStylusMove="OnStylusMove"
+                   PreviewStylusUp="OnStylusUp"
+                   PreviewTouchDown="OnTouchDown"
+                   PreviewTouchMove="OnTouchMove"
+                   PreviewTouchUp="OnTouchUp"
+                   PreviewMouseDown="OnMouseDown"
+                   PreviewMouseMove="OnMouseMove"
+                   PreviewMouseUp="OnMouseUp"
+                   ManipulationStarting="OnManipulationStarting"
+                   ManipulationDelta="OnManipulationDelta"
+                   ManipulationCompleted="OnManipulationCompleted"/>
+        <UniformGrid x:Name="IndicatorPanel" VerticalAlignment="Top" Columns="3" IsHitTestVisible="False">
+            <FrameworkElement.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="SnapsToDevicePixels" Value="True"/>
+                    <Setter Property="Margin" Value="1"/>
+                </Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="TextAlignment" Value="Center"/>
+                    <Setter Property="Margin" Value="16 4"/>
+                </Style>
+                <CircleEase x:Key="Ease.Indecate" EasingMode="EaseOut"/>
+                <Storyboard x:Key="Storyboard.StylusDown">
+                    <ColorAnimation Storyboard.TargetName="StylusDownIndicator"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    From="Brown" To="White" Duration="0:0:2"
+                                    EasingFunction="{StaticResource Ease.Indecate}"/>
+                </Storyboard>
+                <Storyboard x:Key="Storyboard.StylusMove">
+                    <ColorAnimation Storyboard.TargetName="StylusMoveIndicator"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    From="Brown" To="White" Duration="0:0:2"
+                                    EasingFunction="{StaticResource Ease.Indecate}"/>
+                </Storyboard>
+                <Storyboard x:Key="Storyboard.StylusUp">
+                    <ColorAnimation Storyboard.TargetName="StylusUpIndicator"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    From="Brown" To="White" Duration="0:0:2"
+                                    EasingFunction="{StaticResource Ease.Indecate}"/>
+                </Storyboard>
+                <Storyboard x:Key="Storyboard.TouchDown">
+                    <ColorAnimation Storyboard.TargetName="TouchDownIndicator"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    From="Brown" To="White" Duration="0:0:2"
+                                    EasingFunction="{StaticResource Ease.Indecate}"/>
+                </Storyboard>
+                <Storyboard x:Key="Storyboard.TouchMove">
+                    <ColorAnimation Storyboard.TargetName="TouchMoveIndicator"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    From="Brown" To="White" Duration="0:0:2"
+                                    EasingFunction="{StaticResource Ease.Indecate}"/>
+                </Storyboard>
+                <Storyboard x:Key="Storyboard.TouchUp">
+                    <ColorAnimation Storyboard.TargetName="TouchUpIndicator"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    From="Brown" To="White" Duration="0:0:2"
+                                    EasingFunction="{StaticResource Ease.Indecate}"/>
+                </Storyboard>
+                <Storyboard x:Key="Storyboard.MouseDown">
+                    <ColorAnimation Storyboard.TargetName="MouseDownIndicator"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    From="Brown" To="White" Duration="0:0:2"
+                                    EasingFunction="{StaticResource Ease.Indecate}"/>
+                </Storyboard>
+                <Storyboard x:Key="Storyboard.MouseMove">
+                    <ColorAnimation Storyboard.TargetName="MouseMoveIndicator"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    From="Brown" To="White" Duration="0:0:2"
+                                    EasingFunction="{StaticResource Ease.Indecate}"/>
+                </Storyboard>
+                <Storyboard x:Key="Storyboard.MouseUp">
+                    <ColorAnimation Storyboard.TargetName="MouseUpIndicator"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    From="Brown" To="White" Duration="0:0:2"
+                                    EasingFunction="{StaticResource Ease.Indecate}"/>
+                </Storyboard>
+                <Storyboard x:Key="Storyboard.ManipulationStarted">
+                    <ColorAnimation Storyboard.TargetName="ManipulationStartedIndicator"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    From="Brown" To="White" Duration="0:0:2"
+                                    EasingFunction="{StaticResource Ease.Indecate}"/>
+                </Storyboard>
+                <Storyboard x:Key="Storyboard.ManipulationDelta">
+                    <ColorAnimation Storyboard.TargetName="ManipulationDeltaIndicator"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    From="Brown" To="White" Duration="0:0:2"
+                                    EasingFunction="{StaticResource Ease.Indecate}"/>
+                </Storyboard>
+                <Storyboard x:Key="Storyboard.ManipulationCompleted">
+                    <ColorAnimation Storyboard.TargetName="ManipulationCompletedIndicator"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    From="Brown" To="White" Duration="0:0:2"
+                                    EasingFunction="{StaticResource Ease.Indecate}"/>
+                </Storyboard>
+            </FrameworkElement.Resources>
+            <Border x:Name="StylusDownIndicator" Background="White">
+                <TextBlock Text="StylusDown"/>
+            </Border>
+            <Border x:Name="StylusMoveIndicator" Background="White">
+                <TextBlock Text="StylusMove"/>
+            </Border>
+            <Border x:Name="StylusUpIndicator" Background="White">
+                <TextBlock Text="StylusUp"/>
+            </Border>
+            <Border x:Name="TouchDownIndicator" Background="White">
+                <TextBlock Text="TouchDown"/>
+            </Border>
+            <Border x:Name="TouchMoveIndicator" Background="White">
+                <TextBlock Text="TouchMove"/>
+            </Border>
+            <Border x:Name="TouchUpIndicator" Background="White">
+                <TextBlock Text="TouchUp"/>
+            </Border>
+            <Border x:Name="MouseDownIndicator" Background="White">
+                <TextBlock Text="MouseDown"/>
+            </Border>
+            <Border x:Name="MouseMoveIndicator" Background="White">
+                <TextBlock Text="MouseMove"/>
+            </Border>
+            <Border x:Name="MouseUpIndicator" Background="White">
+                <TextBlock Text="MouseUp"/>
+            </Border>
+            <Border x:Name="ManipulationStartedIndicator" Background="White">
+                <TextBlock Text="ManipulationStarted"/>
+            </Border>
+            <Border x:Name="ManipulationDeltaIndicator" Background="White">
+                <TextBlock Text="ManipulationDelta"/>
+            </Border>
+            <Border x:Name="ManipulationCompletedIndicator" Background="White">
+                <TextBlock Text="ManipulationCompleted"/>
+            </Border>
+        </UniformGrid>
+        <CheckBox HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                  Margin="16 8" Content="IsManipulationEnabled"
+                  IsChecked="{Binding IsManipulationEnabled, ElementName=DrawingArea, Mode=TwoWay}"/>
     </Grid>
 </Window>
