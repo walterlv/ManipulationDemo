@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using ManipulationDemo.Properties;
 
 namespace ManipulationDemo
 {
@@ -139,55 +141,9 @@ namespace ManipulationDemo
             return IntPtr.Zero;
         }
 
-        private static readonly List<int> UnnecessaryMsgs = new List<int>
-        {
-            3,
-            5,
-            6,
-            7,
-            8,
-            13,
-            15,
-            19,
-            20,
-            24,
-            25,
-            28,
-            31,
-            32,
-            36,
-            61,
-            70,
-            71,
-            124,
-            125,
-            127,
-            131,
-            132,
-            133,
-            134,
-            160,
-            161,
-            174,
-            274,
-            356,
-            512,
-            522,
-            526,
-            532,
-            533,
-            534,
-            561,
-            562,
-            641,
-            642,
-            674,
-            675,
-            725,
-            799,
-            49283,
-            49343,
-            49586,
-        };
+        private static readonly Lazy<List<int>> UnnecessaryMsgsLazy =
+            new Lazy<List<int>>(() => Settings.Default.IgnoredMsgs.Split(',').Select(int.Parse).ToList());
+
+        private static List<int> UnnecessaryMsgs => UnnecessaryMsgsLazy.Value;
     }
 }
