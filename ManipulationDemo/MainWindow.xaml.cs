@@ -44,10 +44,17 @@ namespace ManipulationDemo
 
         private void OnTick(object sender, EventArgs e)
         {
-            var value = typeof(InputManager).Assembly
-                .TypeOf("StylusLogic")
-                .Get<bool>("IsStylusAndTouchSupportEnabled");
-            IsStylusAndTouchSupportEnabledRun.Text = value.ToString();
+            try
+            {
+                var value = typeof(InputManager).Assembly
+                    .TypeOf("StylusLogic")
+                    .Get<bool>("IsStylusAndTouchSupportEnabled");
+                IsStylusAndTouchSupportEnabledRun.Text = value.ToString();
+            }
+            catch (Exception ex)
+            {
+                IsStylusAndTouchSupportEnabledRun.Text = ex.ToString();
+            }
         }
 
         private void OnStylusDown(object sender, StylusDownEventArgs e)
