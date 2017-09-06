@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 
@@ -15,9 +16,20 @@ namespace ManipulationDemo
         {
             var type = typeRefin.Type;
             var propertyInfo = type
-                .GetProperties(BindingFlags.NonPublic | BindingFlags.Static)
+                .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
                 .FirstOrDefault(x => x.Name == propertyOrFieldName);
-            return (T) propertyInfo?.GetValue(null);
+            if (propertyInfo != null)
+            {
+                return (T)propertyInfo.GetValue(null);
+            }
+            var fieldInfo = type
+                .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+                .FirstOrDefault(x => x.Name == propertyOrFieldName);
+            if (fieldInfo != null)
+            {
+                return (T)fieldInfo.GetValue(null);
+            }
+            return default(T);
         }
     }
 
