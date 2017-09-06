@@ -109,14 +109,7 @@ namespace ManipulationDemo
             {
                 return IntPtr.Zero;
             }
-            if (KwownMsgs.TryGetValue(msg, out var name))
-            {
-                HwndMsgTextBlock.Text += $"{name}{Environment.NewLine}";
-            }
-            else
-            {
-                HwndMsgTextBlock.Text += $"{msg}{Environment.NewLine}";
-            }
+            HwndMsgTextBlock.Text += $"{(WindowMessages) msg}{Environment.NewLine}";
             return IntPtr.Zero;
         }
 
@@ -169,12 +162,6 @@ namespace ManipulationDemo
             49283,
             49343,
             49586,
-        };
-
-        private static readonly Dictionary<int, string> KwownMsgs = new Dictionary<int, string>
-        {
-            {513, "WM_LBUTTONDOWN"},
-            {514, "WM_LBUTTONUP"},
         };
     }
 }
