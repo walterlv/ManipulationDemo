@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Drawing;
@@ -6,7 +7,7 @@ using System.Text;
 
 public enum TouchDeviceKind { Mouse, Pen, Touch }
 
-public class TouchTabletCollection
+public class TouchTabletCollection : IEnumerable<TouchTablet>
 {
     public TouchTabletCollection()
     {
@@ -27,6 +28,20 @@ public class TouchTabletCollection
         get { return tablets[index]; }
     }
     private List<TouchTablet> tablets;
+
+    public IEnumerator<TouchTablet> GetEnumerator()
+    {
+        var count = Count;
+        for (var i = 0; i < count; i++)
+        {
+            yield return this[i];
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
 
 public class TouchTablet

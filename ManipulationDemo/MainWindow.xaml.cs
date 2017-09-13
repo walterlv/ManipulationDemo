@@ -59,7 +59,10 @@ namespace ManipulationDemo
             }
             try
             {
-                PimcManagerTabletCountRun.Text = new TouchTabletCollection().Count.ToString();
+                var collection = new TouchTabletCollection();
+                PimcManagerTabletCountRun.Text = collection.Count.ToString();
+                TabletDeviceCollectionRun.Text = string.Join($",{Environment.NewLine}",
+                    collection.Select(x => $"{x.Name}({(x.IsMultiTouch ? "Multi-" : "")}{x.Kind})"));
             }
             catch (Exception ex)
             {

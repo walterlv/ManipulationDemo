@@ -148,6 +148,9 @@
             <Run Text="PimcManager.TabletCount ="/>
             <Run x:Name="PimcManagerTabletCountRun"/>
             <LineBreak/>
+            <Run Text="They are: "/>
+            <Run x:Name="TabletDeviceCollectionRun"/>
+            <LineBreak/>
             <Run Text="StylusLogic.IsStylusAndTouchSupportEnabled ="/>
             <Run x:Name="IsStylusAndTouchSupportEnabledRun"/>
         </TextBlock>
