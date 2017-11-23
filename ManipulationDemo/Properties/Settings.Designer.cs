@@ -22,5 +22,19 @@ namespace ManipulationDemo.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3,5,6,7,8,13,15,19,20,24,25,28,31,32,36,61,70,71,124,125,127,131,132,133,134,160," +
+            "161,174,274,281,282,283,356,522,526,532,533,534,561,562,641,642,674,675,725,799," +
+            "49283,49343,49586,")]
+        public string IgnoredMsgs {
+            get {
+                return ((string)(this["IgnoredMsgs"]));
+            }
+            set {
+                this["IgnoredMsgs"] = value;
+            }
+        }
     }
 }
