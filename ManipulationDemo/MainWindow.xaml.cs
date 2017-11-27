@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -68,6 +70,35 @@ namespace ManipulationDemo
             catch (Exception ex)
             {
                 PimcManagerTabletCountRun.Text = ex.ToString();
+            }
+            try
+            {
+                var builder = new StringBuilder();
+                foreach (TabletDevice device in Tablet.TabletDevices)
+                {
+                    var deviceProperty = typeof(TabletDevice).GetProperty("TabletDeviceImpl",
+                        BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty);
+                    var deviceImpl = deviceProperty is null ? device : deviceProperty.GetValue(device);
+                    var info = deviceImpl.GetType().GetProperty("TabletSize",
+                        BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty);
+
+                    var tabletSize = (Size) info.GetValue(deviceImpl, null);
+                    if (device.Type == TabletDeviceType.Touch)
+                    {
+                        builder.Append(string.Format("{1}：{2} 点触摸，精度 {3}{0}", Environment.NewLine,
+                            device.Name, device.StylusDevices.Count, tabletSize));
+                    }
+                    else
+                    {
+                        builder.Append(string.Format("{1}：{2} 个触笔设备，精度 {3}{0}", Environment.NewLine,
+                            device.Name, device.StylusDevices.Count, tabletSize));
+                    }
+                }
+                PhysicalSizeRun.Text = builder.ToString();
+            }
+            catch (Exception ex)
+            {
+                PhysicalSizeRun.Text = ex.ToString();
             }
         }
 
@@ -149,7 +180,13 @@ namespace ManipulationDemo
             {
                 return IntPtr.Zero;
             }
-            HwndMsgTextBlock.Text += $"{(WindowMessages) msg}{Environment.NewLine}";
+            //var lines = HwndMsgTextBlock.Text.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+            //if (lines.Length > 60)
+            //{
+            //    lines = 
+            //}
+
+            //HwndMsgTextBlock.Text += $"{(WindowMessages) msg}{Environment.NewLine}";
             return IntPtr.Zero;
         }
 

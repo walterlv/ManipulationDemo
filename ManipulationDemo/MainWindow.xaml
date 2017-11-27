@@ -151,6 +151,9 @@
             <Run Text="They are: "/>
             <Run x:Name="TabletDeviceCollectionRun"/>
             <LineBreak/>
+            <Run Text="With info: "/>
+            <Run x:Name="PhysicalSizeRun"/>
+            <LineBreak/>
             <Run Text="StylusLogic.IsStylusAndTouchSupportEnabled ="/>
             <Run x:Name="IsStylusAndTouchSupportEnabledRun"/>
         </TextBlock>
