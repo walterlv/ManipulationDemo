@@ -180,13 +180,8 @@ namespace ManipulationDemo
             {
                 return IntPtr.Zero;
             }
-            //var lines = HwndMsgTextBlock.Text.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
-            //if (lines.Length > 60)
-            //{
-            //    lines = 
-            //}
 
-            //HwndMsgTextBlock.Text += $"{(WindowMessages) msg}{Environment.NewLine}";
+            HwndMsgTextBlock.Text += $"{(WindowMessages) msg}{Environment.NewLine}";
             return IntPtr.Zero;
         }
 
