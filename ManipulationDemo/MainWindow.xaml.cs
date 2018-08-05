@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -274,9 +273,5 @@ namespace ManipulationDemo
             new Lazy<List<int>>(() => Settings.Default.IgnoredMsgs.Split(',').Select(int.Parse).ToList());
 
         private static List<int> UnnecessaryMsgs => UnnecessaryMsgsLazy.Value;
-
-        private void MainWindow_StateChanged(object sender, EventArgs e)
-        {
-        }
     }
 }
