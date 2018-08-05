@@ -25,6 +25,12 @@ namespace ManipulationDemo
             InitializeComponent();
             this.RemoveIcon();
 
+            var args = Environment.GetCommandLineArgs();
+            if (args.Contains("--startup"))
+            {
+                WindowState = WindowState.Minimized;
+            }
+
             _timer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(1)
