@@ -201,7 +201,7 @@ namespace ManipulationDemo
             
             if (block.CheckAccess())
             {
-                if (block.Text.Length > 1000)
+                if (block.Text.Length > 2500)
                 {
                     block.Text = block.Text.Substring(500);
                 }
