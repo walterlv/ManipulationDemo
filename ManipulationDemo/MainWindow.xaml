@@ -5,6 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ManipulationDemo"
         mc:Ignorable="d" Title="触摸以监视">
+    <Window.Style>
+        <Style TargetType="Window">
+            <Style.Triggers>
+                <Trigger Property="WindowState" Value="Minimized">
+                    <Setter Property="ShowInTaskbar" Value="False" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
     <Grid>
         <Rectangle x:Name="DrawingArea" Fill="White"
                    PreviewStylusDown="OnStylusDown"
