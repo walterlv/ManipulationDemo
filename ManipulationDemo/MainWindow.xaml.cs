@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -11,6 +12,8 @@ using System.Windows.Interop;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using ManipulationDemo.Properties;
+using WpfUsbMonitor;
+using System.Management;
 
 namespace ManipulationDemo
 {
@@ -30,6 +33,45 @@ namespace ManipulationDemo
             };
             _timer.Tick += OnTick;
             _timer.Start();
+
+            WqlEventQuery insertQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
+
+            ManagementEventWatcher insertWatcher = new ManagementEventWatcher(insertQuery);
+            insertWatcher.EventArrived += (s, e) =>
+            {
+                var str = new StringBuilder();
+               str.Append("插入设备");
+
+                var instance = (ManagementBaseObject) e.NewEvent["TargetInstance"];
+                var description = instance.Properties["Description"];
+
+                str.Append(description.Name + " = " + description.Value);
+
+                var deviceId = instance.Properties["DeviceID"];
+                str.Append(deviceId.Name + " = " + deviceId.Value);
+
+                Log($"{DateTime.Now} {str.ToString()} {Environment.NewLine}");
+            };
+            insertWatcher.Start();
+
+            WqlEventQuery removeQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
+            ManagementEventWatcher removeWatcher = new ManagementEventWatcher(removeQuery);
+            removeWatcher.EventArrived += (s, e) =>
+            {
+                var str = new StringBuilder();
+                str.Append("移除设备");
+
+                var instance = (ManagementBaseObject) e.NewEvent["TargetInstance"];
+                var description = instance.Properties["Description"];
+
+                str.Append(description.Name + " = " + description.Value);
+
+                var deviceId = instance.Properties["DeviceID"];
+                str.Append(deviceId.Name + " = " + deviceId.Value);
+
+                Log($"{DateTime.Now} {str.ToString()} {Environment.NewLine}");
+            };
+            removeWatcher.Start();
         }
 
         private Storyboard StylusDownStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.StylusDown");
@@ -198,7 +240,7 @@ namespace ManipulationDemo
         private void Log(TextBlock block, string message, bool toFile = false)
         {
             message = $"{DateTime.Now} {message}{Environment.NewLine}";
-            
+
             if (block.CheckAccess())
             {
                 if (block.Text.Length > 2500)
@@ -215,10 +257,15 @@ namespace ManipulationDemo
 
             if (toFile)
             {
-                lock (_locker)
-                {
-                    File.AppendAllText("log.txt", message, Encoding.UTF8);
-                }
+                Log(message);
+            }
+        }
+
+        private void Log(string message)
+        {
+            lock (_locker)
+            {
+                File.AppendAllText("log.txt", message, Encoding.UTF8);
             }
         }
 
