@@ -1,1015 +1,926 @@
-﻿namespace ManipulationDemo
+﻿using System;
+
+namespace ManipulationDemo
 {
-    public enum WindowMessages
+    /// <summary>
+    /// Windows Messages
+    /// Defined in winuser.h from Windows SDK v6.1
+    /// Documentation pulled from MSDN.
+    /// </summary>
+    public enum WindowMessages : uint
     {
         /// <summary>
         /// The WM_NULL message performs no operation. An application sends the WM_NULL message if it wants to post a message that the recipient window will ignore.
         /// </summary>
-        WM_NULL = 0x0000,
-
+        NULL = 0x0000,
         /// <summary>
-        ///     应用程序创建一个窗口
+        /// The WM_CREATE message is sent when an application requests that a window be created by calling the CreateWindowEx or CreateWindow function. (The message is sent before the function returns.) The window procedure of the new window receives this message after the window is created, but before the window becomes visible.
         /// </summary>
-        WM_CREATE = 0x0001,
-
+        CREATE = 0x0001,
+        /// <summary>
+        /// The WM_DESTROY message is sent when a window is being destroyed. It is sent to the window procedure of the window being destroyed after the window is removed from the screen. 
+        /// This message is sent first to the window being destroyed and then to the child windows (if any) as they are destroyed. During the processing of the message, it can be assumed that all child windows still exist.
+        /// /// </summary>
+        DESTROY = 0x0002,
         /// <summary>
-        ///     一个窗口被销毁
+        /// The WM_MOVE message is sent after a window has been moved. 
         /// </summary>
-        WM_DESTROY = 0x0002,
-
+        MOVE = 0x0003,
         /// <summary>
-        ///  移动一个窗口
+        /// The WM_SIZE message is sent to a window after its size has changed.
         /// </summary>
-        WM_MOVE = 0x0003,
-
+        SIZE = 0x0005,
         /// <summary>
-        /// 改变一个窗口的大小
+        /// The WM_ACTIVATE message is sent to both the window being activated and the window being deactivated. If the windows use the same input queue, the message is sent synchronously, first to the window procedure of the top-level window being deactivated, then to the window procedure of the top-level window being activated. If the windows use different input queues, the message is sent asynchronously, so the window is activated immediately. 
         /// </summary>
-        WM_SIZE = 0x0005,
-
+        ACTIVATE = 0x0006,
         /// <summary>
-        ///  一个窗口被激活或失去激活状态；
+        /// The WM_SETFOCUS message is sent to a window after it has gained the keyboard focus. 
         /// </summary>
-        WM_ACTIVATE = 0x0006,
-
+        SETFOCUS = 0x0007,
         /// <summary>
-        ///  获得焦点后
+        /// The WM_KILLFOCUS message is sent to a window immediately before it loses the keyboard focus. 
         /// </summary>
-        WM_SETFOCUS = 0x0007,
-
+        KILLFOCUS = 0x0008,
         /// <summary>
-        ///  失去焦点
+        /// The WM_ENABLE message is sent when an application changes the enabled state of a window. It is sent to the window whose enabled state is changing. This message is sent before the EnableWindow function returns, but after the enabled state (WS_DISABLED style bit) of the window has changed. 
         /// </summary>
-        WM_KILLFOCUS = 0x0008,
-
+        ENABLE = 0x000A,
         /// <summary>
-        ///  改变enable状态
+        /// An application sends the WM_SETREDRAW message to a window to allow changes in that window to be redrawn or to prevent changes in that window from being redrawn. 
         /// </summary>
-        WM_ENABLE = 0x000A,
-
+        SETREDRAW = 0x000B,
         /// <summary>
-        ///  设置窗口是否能重画
+        /// An application sends a WM_SETTEXT message to set the text of a window. 
         /// </summary>
-        WM_SETREDRAW = 0x000B,
-
+        SETTEXT = 0x000C,
         /// <summary>
-        ///  应用程序发送此消息来设置一个窗口的文本
+        /// An application sends a WM_GETTEXT message to copy the text that corresponds to a window into a buffer provided by the caller. 
         /// </summary>
-        WM_SETTEXT = 0x000C,
-
+        GETTEXT = 0x000D,
         /// <summary>
-        ///  应用程序发送此消息来复制对应窗口的文本到缓冲区
+        /// An application sends a WM_GETTEXTLENGTH message to determine the length, in characters, of the text associated with a window. 
         /// </summary>
-        WM_GETTEXT = 0x000D,
-
+        GETTEXTLENGTH = 0x000E,
         /// <summary>
-        ///  得到与一个窗口有关的文本的长度（不15. 包含空字符）
+        /// The WM_PAINT message is sent when the system or another application makes a request to paint a portion of an application's window. The message is sent when the UpdateWindow or RedrawWindow function is called, or by the DispatchMessage function when the application obtains a WM_PAINT message by using the GetMessage or PeekMessage function. 
         /// </summary>
-        WM_GETTEXTLENGTH = 0x000E,
-
+        PAINT = 0x000F,
         /// <summary>
-        ///  要求一个窗口重画自己
+        /// The WM_CLOSE message is sent as a signal that a window or an application should terminate.
         /// </summary>
-        WM_PAINT = 0x000F,
-
+        CLOSE = 0x0010,
         /// <summary>
-        ///  当一个窗口或应用程序要关闭时发送一个信号
+        /// The WM_QUERYENDSESSION message is sent when the user chooses to end the session or when an application calls one of the system shutdown functions. If any application returns zero, the session is not ended. The system stops sending WM_QUERYENDSESSION messages as soon as one application returns zero.
+        /// After processing this message, the system sends the WM_ENDSESSION message with the wParam parameter set to the results of the WM_QUERYENDSESSION message.
         /// </summary>
-        WM_CLOSE = 0x0010,
-
+        QUERYENDSESSION = 0x0011,
         /// <summary>
-        ///  当用户选择结束对话框或程序自己调用ExitWindows函数
+        /// The WM_QUERYOPEN message is sent to an icon when the user requests that the window be restored to its previous size and position.
         /// </summary>
-        WM_QUERYENDSESSION = 0x0011,
-
+        QUERYOPEN = 0x0013,
         /// <summary>
-        ///  用来结束程序运行或当程序调用postquitmessage函数
+        /// The WM_ENDSESSION message is sent to an application after the system processes the results of the WM_QUERYENDSESSION message. The WM_ENDSESSION message informs the application whether the session is ending.
         /// </summary>
-        WM_QUIT = 0x0012,
-
+        ENDSESSION = 0x0016,
         /// <summary>
-        ///  当用户窗口恢复 以前的大小位置时， 把此消息发送给某个图标23. 
+        /// The WM_QUIT message indicates a request to terminate an application and is generated when the application calls the PostQuitMessage function. It causes the GetMessage function to return zero.
         /// </summary>
-        WM_QUERYOPEN = 0x0013,
-
+        QUIT = 0x0012,
         /// <summary>
-        ///  当窗口背景必须被擦除时（例在窗口改变大小时）
+        /// The WM_ERASEBKGND message is sent when the window background must be erased (for example, when a window is resized). The message is sent to prepare an invalidated portion of a window for painting. 
         /// </summary>
-        WM_ERASEBKGND = 0x0014,
-
+        ERASEBKGND = 0x0014,
         /// <summary>
-        ///  当系统颜色改变时， 发送此消息给所有顶级窗口
+        /// This message is sent to all top-level windows when a change is made to a system color setting. 
         /// </summary>
-        WM_SYSCOLORCHANGE = 0x0015,
-
+        SYSCOLORCHANGE = 0x0015,
         /// <summary>
-        /// 当系统进程发出WM_QUERYENDSESSION消息后,此消息发送给应用程序,通知它对话是否结束
+        /// The WM_SHOWWINDOW message is sent to a window when the window is about to be hidden or shown.
         /// </summary>
-        WM_ENDSESSION = 0x0016,
-
+        SHOWWINDOW = 0x0018,
         /// <summary>
-        ///  
+        /// An application sends the WM_WININICHANGE message to all top-level windows after making a change to the WIN.INI file. The SystemParametersInfo function sends this message after an application uses the function to change a setting in WIN.INI.
+        /// Note  The WM_WININICHANGE message is provided only for compatibility with earlier versions of the system. Applications should use the WM_SETTINGCHANGE message.
         /// </summary>
-        WM_SYSTEMERROR = 0x0017,
-
+        WININICHANGE = 0x001A,
         /// <summary>
-        ///  当隐藏或显示窗口是发送此消息给这个窗口
+        /// An application sends the WM_WININICHANGE message to all top-level windows after making a change to the WIN.INI file. The SystemParametersInfo function sends this message after an application uses the function to change a setting in WIN.INI.
+        /// Note  The WM_WININICHANGE message is provided only for compatibility with earlier versions of the system. Applications should use the WM_SETTINGCHANGE message.
         /// </summary>
-        WM_SHOWWINDOW = 0x0018,
-
+        SETTINGCHANGE = WININICHANGE,
         /// <summary>
-        ///  发此消息给应用程序哪个窗口是激活的，哪个是非激活的；
+        /// The WM_DEVMODECHANGE message is sent to all top-level windows whenever the user changes device-mode settings. 
         /// </summary>
-        WM_ACTIVATEAPP = 0x001C,
-
+        DEVMODECHANGE = 0x001B,
         /// <summary>
-        ///  当系统的字体资源库变化时发送此消息给所有顶级窗口
+        /// The WM_ACTIVATEAPP message is sent when a window belonging to a different application than the active window is about to be activated. The message is sent to the application whose window is being activated and to the application whose window is being deactivated.
         /// </summary>
-        WM_FONTCHANGE = 0x001D,
-
+        ACTIVATEAPP = 0x001C,
         /// <summary>
-        ///  当系统的时间变化时发送此消息给所有顶级窗口
+        /// An application sends the WM_FONTCHANGE message to all top-level windows in the system after changing the pool of font resources. 
         /// </summary>
-        WM_TIMECHANGE = 0x001E,
-
+        FONTCHANGE = 0x001D,
         /// <summary>
-        ///  发送此消息来取消某种正在进行的摸态（操作）
+        /// A message that is sent whenever there is a change in the system time.
         /// </summary>
-        WM_CANCELMODE = 0x001F,
-
+        TIMECHANGE = 0x001E,
         /// <summary>
-        ///   如果鼠标引起光标在某个窗口中移动且鼠标输入没有被捕获时，就发消息给某个窗口
+        /// The WM_CANCELMODE message is sent to cancel certain modes, such as mouse capture. For example, the system sends this message to the active window when a dialog box or message box is displayed. Certain functions also send this message explicitly to the specified window regardless of whether it is the active window. For example, the EnableWindow function sends this message when disabling the specified window.
         /// </summary>
-        WM_SETCURSOR = 0x0020,
-
+        CANCELMODE = 0x001F,
         /// <summary>
-        ///  当光标41. 在某个非激活的窗口中而42. 用户正按着鼠标43. 的某个键发送此消息给当前窗口
+        /// The WM_SETCURSOR message is sent to a window if the mouse causes the cursor to move within a window and mouse input is not captured. 
         /// </summary>
-        WM_MOUSEACTIVATE = 0x0021,
-
+        SETCURSOR = 0x0020,
         /// <summary>
-        ///  发送此消息给MDI子窗口当用户点击此窗口的标45. 题栏，46. 或当窗口被激活，47. 移动，48. 改变大小
+        /// The WM_MOUSEACTIVATE message is sent when the cursor is in an inactive window and the user presses a mouse button. The parent window receives this message only if the child window passes it to the DefWindowProc function.
         /// </summary>
-        WM_CHILDACTIVATE = 0x0022,
-
+        MOUSEACTIVATE = 0x0021,
         /// <summary>
-        ///   此消息由基于计算机的训练程序发送，50. 通过WH_JOURNALPALYBACK的hook程序分离出用户输入消息
+        /// The WM_CHILDACTIVATE message is sent to a child window when the user clicks the window's title bar or when the window is activated, moved, or sized.
         /// </summary>
-        WM_QUEUESYNC = 0x0023,
-
+        CHILDACTIVATE = 0x0022,
         /// <summary>
-        ///  此消息发送给窗口当它将要改变大小或位置；
+        /// The WM_QUEUESYNC message is sent by a computer-based training (CBT) application to separate user-input messages from other messages sent through the WH_JOURNALPLAYBACK Hook procedure. 
         /// </summary>
-        WM_GETMINMAXINFO = 0x0024,
-
+        QUEUESYNC = 0x0023,
         /// <summary>
-        ///   发送给最小化窗口当它图标53. 将要被重画
+        /// The WM_GETMINMAXINFO message is sent to a window when the size or position of the window is about to change. An application can use this message to override the window's default maximized size and position, or its default minimum or maximum tracking size. 
         /// </summary>
-        WM_PAINTICON = 0x0026,
-
+        GETMINMAXINFO = 0x0024,
         /// <summary>
-        /// 此消息发送给某个最小化窗口，55. 仅当它在画图标56. 前它的背景必须被重画
+        /// Windows NT 3.51 and earlier: The WM_PAINTICON message is sent to a minimized window when the icon is to be painted. This message is not sent by newer versions of Microsoft Windows, except in unusual circumstances explained in the Remarks.
         /// </summary>
-        WM_ICONERASEBKGND = 0x0027,
-
+        PAINTICON = 0x0026,
         /// <summary>
-        ///  发送此消息给一个对话框程序去更改焦点位置
+        /// Windows NT 3.51 and earlier: The WM_ICONERASEBKGND message is sent to a minimized window when the background of the icon must be filled before painting the icon. A window receives this message only if a class icon is defined for the window; otherwise, WM_ERASEBKGND is sent. This message is not sent by newer versions of Windows.
         /// </summary>
-        WM_NEXTDLGCTL = 0x0028,
-
+        ICONERASEBKGND = 0x0027,
         /// <summary>
-        ///  每当打印管理列队增加或减少一条作业时发出此消息
+        /// The WM_NEXTDLGCTL message is sent to a dialog box procedure to set the keyboard focus to a different control in the dialog box. 
         /// </summary>
-        WM_SPOOLERSTATUS = 0x002A,
-
+        NEXTDLGCTL = 0x0028,
         /// <summary>
-        ///   当button，60. combobox，61. listbox，62. menu的可视外观改变时发送此消息给这些空件的所有者
+        /// The WM_SPOOLERSTATUS message is sent from Print Manager whenever a job is added to or removed from the Print Manager queue. 
         /// </summary>
-        WM_DRAWITEM = 0x002B,
-
+        SPOOLERSTATUS = 0x002A,
         /// <summary>
-        ///  当button,combobox,listbox,listviewcontrol,ormenuitem被创建时发送此消息 给控件      的所有者
+        /// The WM_DRAWITEM message is sent to the parent window of an owner-drawn button, combo box, list box, or menu when a visual aspect of the button, combo box, list box, or menu has changed.
         /// </summary>
-        WM_MEASUREITEM = 0x002C,
-
+        DRAWITEM = 0x002B,
         /// <summary>
-        ///  当thelistbox或combobox被销毁或当某些项被删除通过             LB_DELETESTRING,LB_RESETCONTENT,CB_DELETESTRING,orCB_RESETCONTENT消息
+        /// The WM_MEASUREITEM message is sent to the owner window of a combo box, list box, list view control, or menu item when the control or menu is created.
         /// </summary>
-        WM_DELETEITEM = 0x002D,
-
+        MEASUREITEM = 0x002C,
         /// <summary>
-        ///  此消息有一个LBS_WANTKEYBOARDINPUT风格的发出给它的所有者来响应WM_KEYDOWN消息
+        /// Sent to the owner of a list box or combo box when the list box or combo box is destroyed or when items are removed by the LB_DELETESTRING, LB_RESETCONTENT, CB_DELETESTRING, or CB_RESETCONTENT message. The system sends a WM_DELETEITEM message for each deleted item. The system sends the WM_DELETEITEM message for any deleted list box or combo box item with nonzero item data.
         /// </summary>
-        WM_VKEYTOITEM = 0x002E,
-
+        DELETEITEM = 0x002D,
         /// <summary>
-        ///    此消息由一个LBS_WANTKEYBOARDINPUT风格的列表框发送给他的所有者来响应WM_CHAR消息
+        /// Sent by a list box with the LBS_WANTKEYBOARDINPUT style to its owner in response to a WM_KEYDOWN message. 
         /// </summary>
-        WM_CHARTOITEM = 0x002F,
-
+        VKEYTOITEM = 0x002E,
         /// <summary>
-        ///   当绘制文本时程序发送此消息得到控件要用的颜色
+        /// Sent by a list box with the LBS_WANTKEYBOARDINPUT style to its owner in response to a WM_CHAR message. 
         /// </summary>
-        WM_SETFONT = 0x0030,
-
+        CHARTOITEM = 0x002F,
         /// <summary>
-        ///   应用程序发送此消息得到当前控件绘制文本的字体
+        /// An application sends a WM_SETFONT message to specify the font that a control is to use when drawing text. 
         /// </summary>
-        WM_GETFONT = 0x0031,
-
+        SETFONT = 0x0030,
         /// <summary>
-        ///   应用程序发送此消息让一个窗口与一个热键相关连
+        /// An application sends a WM_GETFONT message to a control to retrieve the font with which the control is currently drawing its text. 
         /// </summary>
-        WM_SETHOTKEY = 0x0032,
-
+        GETFONT = 0x0031,
         /// <summary>
-        ///   应用程序发送此消息来判断热键与某个窗口是否有关联
+        /// An application sends a WM_SETHOTKEY message to a window to associate a hot key with the window. When the user presses the hot key, the system activates the window. 
         /// </summary>
-        WM_GETHOTKEY = 0x0033,
-
+        SETHOTKEY = 0x0032,
         /// <summary>
-        ///  此消息发送给最小化窗口，72. 当此窗口将要被拖放而73. 它的类中没有定义图标74. ，75. 应用程序        能返回一个图标76. 或光标77. 的句柄，78. 当用户拖放图标79. 时系统显示这个图标80. 或光标81. 
+        /// An application sends a WM_GETHOTKEY message to determine the hot key associated with a window. 
         /// </summary>
-        WM_QUERYDRAGICON = 0x0037,
-
+        GETHOTKEY = 0x0033,
         /// <summary>
-        ///  发送此消息来判定combobox或listbox新增加的项的相对位置
+        /// The WM_QUERYDRAGICON message is sent to a minimized (iconic) window. The window is about to be dragged by the user but does not have an icon defined for its class. An application can return a handle to an icon or cursor. The system displays this cursor or icon while the user drags the icon.
         /// </summary>
-        WM_COMPAREITEM = 0x0039,
-
+        QUERYDRAGICON = 0x0037,
         /// <summary>
-        ///   
+        /// The system sends the WM_COMPAREITEM message to determine the relative position of a new item in the sorted list of an owner-drawn combo box or list box. Whenever the application adds a new item, the system sends this message to the owner of a combo box or list box created with the CBS_SORT or LBS_SORT style. 
         /// </summary>
-        WM_GETOBJECT = 0x003D,
-
+        COMPAREITEM = 0x0039,
         /// <summary>
-        ///  显示内存已经很少了
+        /// Active Accessibility sends the WM_GETOBJECT message to obtain information about an accessible object contained in a server application. 
+        /// Applications never send this message directly. It is sent only by Active Accessibility in response to calls to AccessibleObjectFromPoint, AccessibleObjectFromEvent, or AccessibleObjectFromWindow. However, server applications handle this message. 
         /// </summary>
-        WM_COMPACTING = 0x0041,
-
+        GETOBJECT = 0x003D,
         /// <summary>
-        ///  发送此消息给那个窗口的大小和位置将要被改变时，86. 来调用setwindowpos函数或        其它窗口管理函数
+        /// The WM_COMPACTING message is sent to all top-level windows when the system detects more than 12.5 percent of system time over a 30- to 60-second interval is being spent compacting memory. This indicates that system memory is low.
         /// </summary>
-        WM_WINDOWPOSCHANGING = 0x0046,
-
+        COMPACTING = 0x0041,
         /// <summary>
-        ///  发送此消息给那个窗口的大小和位置已经被改变时，88. 来调用setwindowpos函数或        其它窗口管理函数
+        /// WM_COMMNOTIFY is Obsolete for Win32-Based Applications
         /// </summary>
-        WM_WINDOWPOSCHANGED = 0x0047,
-
+        [Obsolete]
+        COMMNOTIFY = 0x0044,
         /// <summary>
-        ///   (适用于16位的windows） 当系统将要进入暂停状态时发送此消息
+        /// The WM_WINDOWPOSCHANGING message is sent to a window whose size, position, or place in the Z order is about to change as a result of a call to the SetWindowPos function or another window-management function.
         /// </summary>
-        WM_POWER = 0x0048,
-
+        WINDOWPOSCHANGING = 0x0046,
         /// <summary>
-        ///   当一个应用程序传递数据给另一个应用程序时发送此消息
+        /// The WM_WINDOWPOSCHANGED message is sent to a window whose size, position, or place in the Z order has changed as a result of a call to the SetWindowPos function or another window-management function.
         /// </summary>
-        WM_COPYDATA = 0x004A,
-
+        WINDOWPOSCHANGED = 0x0047,
         /// <summary>
-        ///  当某个用户取消程序日志激活状态，92. 提交此消息给程序
+        /// Notifies applications that the system, typically a battery-powered personal computer, is about to enter a suspended mode.
+        /// Use: POWERBROADCAST
         /// </summary>
-        WM_CANCELJOURNAL = 0x004B,
-
+        [Obsolete]
+        POWER = 0x0048,
         /// <summary>
-        ///    当某个控件的某个事件已经发生或这个控件需要得到一些信息时，94. 发送此消息给它的父窗口
+        /// An application sends the WM_COPYDATA message to pass data to another application. 
         /// </summary>
-        WM_NOTIFY = 0x004E,
-
+        COPYDATA = 0x004A,
         /// <summary>
-        ///  当用户选择某种输入语言，96. 或输入语言的热键改变
+        /// The WM_CANCELJOURNAL message is posted to an application when a user cancels the application's journaling activities. The message is posted with a NULL window handle. 
         /// </summary>
-        WM_INPUTLANGCHANGEREQUEST = 0x0050,
-
+        CANCELJOURNAL = 0x004B,
         /// <summary>
-        ///  当平台现场已经被改变后发送此消息给受影响的最顶级窗口
+        /// Sent by a common control to its parent window when an event has occurred or the control requires some information. 
         /// </summary>
-        WM_INPUTLANGCHANGE = 0x0051,
-
+        NOTIFY = 0x004E,
         /// <summary>
-        ///   当程序已经初始化windows帮助例程时发送此消息给应用程序
+        /// The WM_INPUTLANGCHANGEREQUEST message is posted to the window with the focus when the user chooses a new input language, either with the hotkey (specified in the Keyboard control panel application) or from the indicator on the system taskbar. An application can accept the change by passing the message to the DefWindowProc function or reject the change (and prevent it from taking place) by returning immediately. 
         /// </summary>
-        WM_TCARD = 0x0052,
-
+        INPUTLANGCHANGEREQUEST = 0x0050,
         /// <summary>
-        ///  此消息显示用户按下了F1，100. 如果某个菜单是激活的，101. 就发送此消息个此窗口关联的菜单,否则就    发送给有焦点的窗口，102. 如果当前都没有焦点，103. 就把此消息发送给当前激活的窗口
+        /// The WM_INPUTLANGCHANGE message is sent to the topmost affected window after an application's input language has been changed. You should make any application-specific settings and pass the message to the DefWindowProc function, which passes the message to all first-level child windows. These child windows can pass the message to DefWindowProc to have it pass the message to their child windows, and so on. 
         /// </summary>
-        WM_HELP = 0x0053,
-
+        INPUTLANGCHANGE = 0x0051,
         /// <summary>
-        ///  当用户已经登入或退出后发送此消息给所有的窗口，105. 当用户登入或退出时系统更新用   户的具体设置信息，106. 在用户更新设置时系统马上发送此消息；
+        /// Sent to an application that has initiated a training card with Microsoft Windows Help. The message informs the application when the user clicks an authorable button. An application initiates a training card by specifying the HELP_TCARD command in a call to the WinHelp function.
         /// </summary>
-        WM_USERCHANGED = 0x0054,
-
+        TCARD = 0x0052,
         /// <summary>
-        ///  公用控件，108. 自定义控件和他们的父窗口通过此消息来判断控件是使用ANSI还是    UNICODE结构在WM_NOTIFY消息，109. 使用此控件能使某个控件与它的父控件之间进行相互通信
+        /// Indicates that the user pressed the F1 key. If a menu is active when F1 is pressed, WM_HELP is sent to the window associated with the menu; otherwise, WM_HELP is sent to the window that has the keyboard focus. If no window has the keyboard focus, WM_HELP is sent to the currently active window. 
         /// </summary>
-        WM_NOTIFYFORMAT = 0x0055,
-
+        HELP = 0x0053,
         /// <summary>
-        ///  当用户某个窗口中点击了一下右键就发送此消息给这个窗口
+        /// The WM_USERCHANGED message is sent to all windows after the user has logged on or off. When the user logs on or off, the system updates the user-specific settings. The system sends this message immediately after updating the settings.
         /// </summary>
-        WM_CONTEXTMENU = 0x007B,
-
+        USERCHANGED = 0x0054,
         /// <summary>
-        ///  当调用SETWINDOWLONG函数将要改变一个或多个窗口的风格时发送此消息给那个窗口
+        /// Determines if a window accepts ANSI or Unicode structures in the WM_NOTIFY notification message. WM_NOTIFYFORMAT messages are sent from a common control to its parent window and from the parent window to the common control.
         /// </summary>
-        WM_STYLECHANGING = 0x007C,
-
+        NOTIFYFORMAT = 0x0055,
         /// <summary>
-        ///  当调用SETWINDOWLONG函数一个或多个窗口的风格后发送此消息给那个窗口
+        /// The WM_CONTEXTMENU message notifies a window that the user clicked the right mouse button (right-clicked) in the window.
         /// </summary>
-        WM_STYLECHANGED = 0x007D,
-
+        CONTEXTMENU = 0x007B,
         /// <summary>
-        ///  当显示器的分辨率改变后发送此消息给所有的窗口
+        /// The WM_STYLECHANGING message is sent to a window when the SetWindowLong function is about to change one or more of the window's styles.
         /// </summary>
-        WM_DISPLAYCHANGE = 0x007E,
-
+        STYLECHANGING = 0x007C,
         /// <summary>
-        ///   此消息发送给某个窗口来返回与某个窗口有关连的大图标115. 或小图标116. 的句柄；
+        /// The WM_STYLECHANGED message is sent to a window after the SetWindowLong function has changed one or more of the window's styles
         /// </summary>
-        WM_GETICON = 0x007F,
-
+        STYLECHANGED = 0x007D,
         /// <summary>
-        ///   程序发送此消息让一个新的大图标118. 或小图标119. 与某个窗口关联；
+        /// The WM_DISPLAYCHANGE message is sent to all windows when the display resolution has changed.
         /// </summary>
-        WM_SETICON = 0x0080,
-
+        DISPLAYCHANGE = 0x007E,
         /// <summary>
-        ///   当某个窗口第一次被创建时，121. 此消息在WM_CREATE消息发送前发送；
+        /// The WM_GETICON message is sent to a window to retrieve a handle to the large or small icon associated with a window. The system displays the large icon in the ALT+TAB dialog, and the small icon in the window caption. 
         /// </summary>
-        WM_NCCREATE = 0x0081,
-
+        GETICON = 0x007F,
         /// <summary>
-        ///   此消息通知某个窗口，123. 非客户区正在销毁
+        /// An application sends the WM_SETICON message to associate a new large or small icon with a window. The system displays the large icon in the ALT+TAB dialog box, and the small icon in the window caption. 
         /// </summary>
-        WM_NCDESTROY = 0x0082,
-
+        SETICON = 0x0080,
         /// <summary>
-        ///  当某个窗口的客户区域必须被核算时发送此消息
+        /// The WM_NCCREATE message is sent prior to the WM_CREATE message when a window is first created.
         /// </summary>
-        WM_NCCALCSIZE = 0x0083,
-
+        NCCREATE = 0x0081,
         /// <summary>
-        ///    移动鼠标126. ，127. 按住或释放鼠标128. 时发生
+        /// The WM_NCDESTROY message informs a window that its nonclient area is being destroyed. The DestroyWindow function sends the WM_NCDESTROY message to the window following the WM_DESTROY message. WM_DESTROY is used to free the allocated memory object associated with the window. 
+        /// The WM_NCDESTROY message is sent after the child windows have been destroyed. In contrast, WM_DESTROY is sent before the child windows are destroyed.
         /// </summary>
-        WM_NCHITTEST = 0x0084,
-
+        NCDESTROY = 0x0082,
         /// <summary>
-        ///   程序发送此消息给某个窗口当它（窗口）的框架必须被绘制时；
+        /// The WM_NCCALCSIZE message is sent when the size and position of a window's client area must be calculated. By processing this message, an application can control the content of the window's client area when the size or position of the window changes.
         /// </summary>
-        WM_NCPAINT = 0x0085,
-
+        NCCALCSIZE = 0x0083,
         /// <summary>
-        ///  此消息发送给某个窗口仅当它的非客户区需要被改变来显示是激活还是非激活状态；
+        /// The WM_NCHITTEST message is sent to a window when the cursor moves, or when a mouse button is pressed or released. If the mouse is not captured, the message is sent to the window beneath the cursor. Otherwise, the message is sent to the window that has captured the mouse.
         /// </summary>
-        WM_NCACTIVATE = 0x0086,
-
+        NCHITTEST = 0x0084,
         /// <summary>
-        ///    发送此消息给某个与对话框程序关联的控件，132. widdows控制方位键和TAB键使输入进入    此控件通过响应WM_GETDLGCODE消息，133. 应用程序可以把他当成一个特殊的输入控件并能处理它
+        /// The WM_NCPAINT message is sent to a window when its frame must be painted. 
         /// </summary>
-        WM_GETDLGCODE = 0x0087,
-
+        NCPAINT = 0x0085,
         /// <summary>
-        ///  当光标135. 在一个窗口的非客户区内移动时发送此消息给这个窗口file: 非客户区为：   窗体的标136. 题栏及窗的边框体
+        /// The WM_NCACTIVATE message is sent to a window when its nonclient area needs to be changed to indicate an active or inactive state.
         /// </summary>
-        WM_NCMOUSEMOVE = 0x00A0,
-
+        NCACTIVATE = 0x0086,
         /// <summary>
-        ///  当光标138. 在一个窗口的非客户区同139. 时按下鼠标140. 左键时提交此消息
+        /// The WM_GETDLGCODE message is sent to the window procedure associated with a control. By default, the system handles all keyboard input to the control; the system interprets certain types of keyboard input as dialog box navigation keys. To override this default behavior, the control can respond to the WM_GETDLGCODE message to indicate the types of input it wants to process itself.
         /// </summary>
-        WM_NCLBUTTONDOWN = 0x00A1,
-
+        GETDLGCODE = 0x0087,
         /// <summary>
-        ///  当用户释放鼠标142. 左键同143. 时光标144. 某个窗口在非客户区十发送此消息；
+        /// The WM_SYNCPAINT message is used to synchronize painting while avoiding linking independent GUI threads.
         /// </summary>
-        WM_NCLBUTTONUP = 0x00A2,
-
+        SYNCPAINT = 0x0088,
         /// <summary>
-        /// 当用户双击鼠标146. 左键同147. 时光标148. 某个窗口在非客户区十发送此消息
+        /// The WM_NCMOUSEMOVE message is posted to a window when the cursor is moved within the nonclient area of the window. This message is posted to the window that contains the cursor. If a window has captured the mouse, this message is not posted.
         /// </summary>
-        WM_NCLBUTTONDBLCLK = 0x00A3,
-
+        NCMOUSEMOVE = 0x00A0,
         /// <summary>
-        ///  当用户按下鼠标150. 右键同151. 时光标152. 又在窗口的非客户区时发送此消息
+        /// The WM_NCLBUTTONDOWN message is posted when the user presses the left mouse button while the cursor is within the nonclient area of a window. This message is posted to the window that contains the cursor. If a window has captured the mouse, this message is not posted.
         /// </summary>
-        WM_NCRBUTTONDOWN = 0x00A4,
-
+        NCLBUTTONDOWN = 0x00A1,
         /// <summary>
-        ///  当用户释放鼠标154. 右键同155. 时光标156. 又在窗口的非客户区时发送此消息
+        /// The WM_NCLBUTTONUP message is posted when the user releases the left mouse button while the cursor is within the nonclient area of a window. This message is posted to the window that contains the cursor. If a window has captured the mouse, this message is not posted.
         /// </summary>
-        WM_NCRBUTTONUP = 0x00A5,
-
+        NCLBUTTONUP = 0x00A2,
         /// <summary>
-        /// 当用户双击鼠标158. 右键同159. 时光标160. 某个窗口在非客户区十发送此消息
+        /// The WM_NCLBUTTONDBLCLK message is posted when the user double-clicks the left mouse button while the cursor is within the nonclient area of a window. This message is posted to the window that contains the cursor. If a window has captured the mouse, this message is not posted.
         /// </summary>
-        WM_NCRBUTTONDBLCLK = 0x00A6,
-
+        NCLBUTTONDBLCLK = 0x00A3,
         /// <summary>
-        ///  当用户按下鼠标162. 中键同163. 时光标164. 又在窗口的非客户区时发送此消息
+        /// The WM_NCRBUTTONDOWN message is posted when the user presses the right mouse button while the cursor is within the nonclient area of a window. This message is posted to the window that contains the cursor. If a window has captured the mouse, this message is not posted.
         /// </summary>
-        WM_NCMBUTTONDOWN = 0x00A7,
-
+        NCRBUTTONDOWN = 0x00A4,
         /// <summary>
-        ///  当用户释放鼠标166. 中键同167. 时光标168. 又在窗口的非客户区时发送此消息
+        /// The WM_NCRBUTTONUP message is posted when the user releases the right mouse button while the cursor is within the nonclient area of a window. This message is posted to the window that contains the cursor. If a window has captured the mouse, this message is not posted.
         /// </summary>
-        WM_NCMBUTTONUP = 0x00A8,
-
+        NCRBUTTONUP = 0x00A5,
         /// <summary>
-        /// 当用户双击鼠标170. 中键同171. 时光标172. 又在窗口的非客户区时发送此消息
+        /// The WM_NCRBUTTONDBLCLK message is posted when the user double-clicks the right mouse button while the cursor is within the nonclient area of a window. This message is posted to the window that contains the cursor. If a window has captured the mouse, this message is not posted.
         /// </summary>
-        WM_NCMBUTTONDBLCLK = 0x00A9,
-
+        NCRBUTTONDBLCLK = 0x00A6,
         /// <summary>
-        ///  
+        /// The WM_NCMBUTTONDOWN message is posted when the user presses the middle mouse button while the cursor is within the nonclient area of a window. This message is posted to the window that contains the cursor. If a window has captured the mouse, this message is not posted.
         /// </summary>
-        WM_KEYFIRST = 0x0100,
-
+        NCMBUTTONDOWN = 0x00A7,
         /// <summary>
-        ///  file: 按下一个键
+        /// The WM_NCMBUTTONUP message is posted when the user releases the middle mouse button while the cursor is within the nonclient area of a window. This message is posted to the window that contains the cursor. If a window has captured the mouse, this message is not posted.
         /// </summary>
-        WM_KEYDOWN = 0x0100,
-
+        NCMBUTTONUP = 0x00A8,
         /// <summary>
-        ///   file: 释放一个键
+        /// The WM_NCMBUTTONDBLCLK message is posted when the user double-clicks the middle mouse button while the cursor is within the nonclient area of a window. This message is posted to the window that contains the cursor. If a window has captured the mouse, this message is not posted.
         /// </summary>
-        WM_KEYUP = 0x0101,
-
+        NCMBUTTONDBLCLK = 0x00A9,
         /// <summary>
-        ///   file: 按下某键，177. 并已发出WM_KEYDOWN，178. WM_KEYUP消息
+        /// The WM_NCXBUTTONDOWN message is posted when the user presses the first or second X button while the cursor is in the nonclient area of a window. This message is posted to the window that contains the cursor. If a window has captured the mouse, this message is not posted.
         /// </summary>
-        WM_CHAR = 0x0102,
-
+        NCXBUTTONDOWN = 0x00AB,
         /// <summary>
-        ///  当用translatemessage函数翻译WM_KEYUP消息时发送此消息给拥有焦点的窗口
+        /// The WM_NCXBUTTONUP message is posted when the user releases the first or second X button while the cursor is in the nonclient area of a window. This message is posted to the window that contains the cursor. If a window has captured the mouse, this message is not posted.
         /// </summary>
-        WM_DEADCHAR = 0x0103,
-
+        NCXBUTTONUP = 0x00AC,
         /// <summary>
-        /// 当用户按住ALT键同181. 时按下其它键时提交此消息给拥有焦点的窗口；
+        /// The WM_NCXBUTTONDBLCLK message is posted when the user double-clicks the first or second X button while the cursor is in the nonclient area of a window. This message is posted to the window that contains the cursor. If a window has captured the mouse, this message is not posted.
         /// </summary>
-        WM_SYSKEYDOWN = 0x0104,
-
+        NCXBUTTONDBLCLK = 0x00AD,
         /// <summary>
-        ///  当用户释放一个键同183. 时ALT键还按着时提交此消息给拥有焦点的窗口
+        /// The WM_INPUT_DEVICE_CHANGE message is sent to the window that registered to receive raw input. A window receives this message through its WindowProc function.
         /// </summary>
-        WM_SYSKEYUP = 0x0105,
-
+        INPUT_DEVICE_CHANGE = 0x00FE,
         /// <summary>
-        ///  当WM_SYSKEYDOWN消息被TRANSLATEMESSAGE函数翻译后提交此消息给拥有焦点的窗口
+        /// The WM_INPUT message is sent to the window that is getting raw input. 
         /// </summary>
-        WM_SYSCHAR = 0x0106,
-
+        INPUT = 0x00FF,
         /// <summary>
-        ///  当WM_SYSKEYDOWN消息被TRANSLATEMESSAGE函数翻译后发送此消息给拥有焦点的窗口
+        /// This message filters for keyboard messages.
         /// </summary>
-        WM_SYSDEADCHAR = 0x0107,
-
+        KEYFIRST = 0x0100,
         /// <summary>
-        ///  在一个对话框程序被显示前发送此消息给它,常用此消息初始化控件和执行其它任务
+        /// The WM_KEYDOWN message is posted to the window with the keyboard focus when a nonsystem key is pressed. A nonsystem key is a key that is pressed when the ALT key is not pressed. 
         /// </summary>
-        WM_INITDIALOG = 0x0110,
-
+        KEYDOWN = 0x0100,
         /// <summary>
-        ///   当用户选择一条菜单命令项或当某个控件发送一条消息给它的父窗口，188. 一个快捷键被翻译
+        /// The WM_KEYUP message is posted to the window with the keyboard focus when a nonsystem key is released. A nonsystem key is a key that is pressed when the ALT key is not pressed, or a keyboard key that is pressed when a window has the keyboard focus. 
         /// </summary>
-        WM_COMMAND = 0x0111,
-
+        KEYUP = 0x0101,
         /// <summary>
-        ///  当用户选择窗口菜单的一条命令或当用户选择最大化或最小化时那个窗口会收到此消息
+        /// The WM_CHAR message is posted to the window with the keyboard focus when a WM_KEYDOWN message is translated by the TranslateMessage function. The WM_CHAR message contains the character code of the key that was pressed. 
         /// </summary>
-        WM_SYSCOMMAND = 0x0112,
-
+        CHAR = 0x0102,
         /// <summary>
-        ///       发生了定时器事件
+        /// The WM_DEADCHAR message is posted to the window with the keyboard focus when a WM_KEYUP message is translated by the TranslateMessage function. WM_DEADCHAR specifies a character code generated by a dead key. A dead key is a key that generates a character, such as the umlaut (double-dot), that is combined with another character to form a composite character. For example, the umlaut-O character (Ö) is generated by typing the dead key for the umlaut character, and then typing the O key. 
         /// </summary>
-        WM_TIMER = 0x0113,
-
+        DEADCHAR = 0x0103,
         /// <summary>
-        ///   当一个窗口标192. 准水平滚动条产生一个滚动事件时发送此消息给那个窗口，193. 也发送给拥有它的控件
+        /// The WM_SYSKEYDOWN message is posted to the window with the keyboard focus when the user presses the F10 key (which activates the menu bar) or holds down the ALT key and then presses another key. It also occurs when no window currently has the keyboard focus; in this case, the WM_SYSKEYDOWN message is sent to the active window. The window that receives the message can distinguish between these two contexts by checking the context code in the lParam parameter. 
         /// </summary>
-        WM_HSCROLL = 0x0114,
-
+        SYSKEYDOWN = 0x0104,
         /// <summary>
-        ///   当一个窗口标195. 准垂直滚动条产生一个滚动事件时发送此消息给那个窗口也，196. 发送给拥有它的控件
+        /// The WM_SYSKEYUP message is posted to the window with the keyboard focus when the user releases a key that was pressed while the ALT key was held down. It also occurs when no window currently has the keyboard focus; in this case, the WM_SYSKEYUP message is sent to the active window. The window that receives the message can distinguish between these two contexts by checking the context code in the lParam parameter. 
         /// </summary>
-        WM_VSCROLL = 0x0115,
-
+        SYSKEYUP = 0x0105,
         /// <summary>
-        ///  当一个菜单将要被激活时发送此消息，198. 它发生在用户菜单条中的某项或按下某个菜单键，199.         它允许程序在显示前更改菜单
+        /// The WM_SYSCHAR message is posted to the window with the keyboard focus when a WM_SYSKEYDOWN message is translated by the TranslateMessage function. It specifies the character code of a system character key — that is, a character key that is pressed while the ALT key is down. 
         /// </summary>
-        WM_INITMENU = 0x0116,
-
+        SYSCHAR = 0x0106,
         /// <summary>
-        ///  当一个下拉菜单或子菜单将要被激活时发送此消息，201. 它允许程序在它显示前更改菜单，202.        而203. 不204. 要改变全部
+        /// The WM_SYSDEADCHAR message is sent to the window with the keyboard focus when a WM_SYSKEYDOWN message is translated by the TranslateMessage function. WM_SYSDEADCHAR specifies the character code of a system dead key — that is, a dead key that is pressed while holding down the ALT key. 
         /// </summary>
-        WM_INITMENUPOPUP = 0x0117,
-
+        SYSDEADCHAR = 0x0107,
         /// <summary>
-        ///  当用户选择一条菜单项时发送此消息给菜单的所有者（一般是窗口）
+        /// The WM_UNICHAR message is posted to the window with the keyboard focus when a WM_KEYDOWN message is translated by the TranslateMessage function. The WM_UNICHAR message contains the character code of the key that was pressed. 
+        /// The WM_UNICHAR message is equivalent to WM_CHAR, but it uses Unicode Transformation Format (UTF)-32, whereas WM_CHAR uses UTF-16. It is designed to send or post Unicode characters to ANSI windows and it can can handle Unicode Supplementary Plane characters.
         /// </summary>
-        WM_MENUSELECT = 0x011F,
-
+        UNICHAR = 0x0109,
         /// <summary>
-        ///   当菜单已被激活用户按下了某个键（不207. 同208. 于加速键），209. 发送此消息给菜单的所有者；
+        /// This message filters for keyboard messages.
         /// </summary>
-        WM_MENUCHAR = 0x0120,
-
+        KEYLAST = 0x0109,
         /// <summary>
-        ///   当一个模态对话框或菜单进入空载状态时发送此消息给它的所有者，211. 一个模态对话框       或菜单进入空载状态就是在处理一条或几条先前的消息后没有消息它的列队中等待
+        /// Sent immediately before the IME generates the composition string as a result of a keystroke. A window receives this message through its WindowProc function. 
         /// </summary>
-        WM_ENTERIDLE = 0x0121,
-
+        IME_STARTCOMPOSITION = 0x010D,
         /// <summary>
-        ///  WM_MENUDRAG=$0123: WM_MENUGETOBJECT=$0124: WM_UNINITMENUPOPUP=$0125:
+        /// Sent to an application when the IME ends composition. A window receives this message through its WindowProc function. 
         /// </summary>
-        WM_MENURBUTTONUP = 0x0122,
-
+        IME_ENDCOMPOSITION = 0x010E,
         /// <summary>
-        ///  WM_CHANGEUISTATE=$0127:WM_UPDATEUISTATE=$0128:WM_QUERYUISTATE=$0129:
+        /// Sent to an application when the IME changes composition status as a result of a keystroke. A window receives this message through its WindowProc function. 
         /// </summary>
-        WM_MENUCOMMAND = 0x0126,
-
+        IME_COMPOSITION = 0x010F,
+        IME_KEYLAST = 0x010F,
         /// <summary>
-        ///  在windows绘制消息框前发送此消息给消息框的所有者窗口，215. 通过响应这条            消息，216. 所有者窗口可以通过使用给定的相关显示设备217. 的句柄来设置消息框的文本和背景颜色
+        /// The WM_INITDIALOG message is sent to the dialog box procedure immediately before a dialog box is displayed. Dialog box procedures typically use this message to initialize controls and carry out any other initialization tasks that affect the appearance of the dialog box. 
         /// </summary>
-        WM_CTLCOLORMSGBOX = 0x0132,
-
+        INITDIALOG = 0x0110,
         /// <summary>
-        ///  当一个编辑型控件将要被绘制时发送此消息给它的父窗口:通过响应这条消息,所有者窗口可以通过使用给定的相关显示设备219. 的句柄来设置编辑框的文本和背景颜色
+        /// The WM_COMMAND message is sent when the user selects a command item from a menu, when a control sends a notification message to its parent window, or when an accelerator keystroke is translated. 
         /// </summary>
-        WM_CTLCOLOREDIT = 0x0133,
-
+        COMMAND = 0x0111,
         /// <summary>
-        /// 当一个列表框控件将要被绘制前发送此消息给它的父窗口；通过响应这条息，221. 所有者窗口可以通过使用给定的相关显示设备222. 的句柄来设置列表框的文本和背景颜色
+        /// A window receives this message when the user chooses a command from the Window menu, clicks the maximize button, minimize button, restore button, close button, or moves the form. You can stop the form from moving by filtering this out.
         /// </summary>
-        WM_CTLCOLORLISTBOX = 0x0134,
-
+        SYSCOMMAND = 0x0112,
         /// <summary>
-        ///  当一个按钮控件将要被绘制时发送此消息给它的父窗口；通过响应这条消息，224. 所有者       窗口可以通过使用给定的相关显示设备225. 的句柄来设置按纽的文本和背景颜色
+        /// The WM_TIMER message is posted to the installing thread's message queue when a timer expires. The message is posted by the GetMessage or PeekMessage function. 
         /// </summary>
-        WM_CTLCOLORBTN = 0x0135,
-
+        TIMER = 0x0113,
         /// <summary>
-        ///  当一个对话框控件将要被绘制前发送此消息给它的父窗口；通过响应这条消息，227. 所有       者窗口可以通过使用给定的相关显示设备228. 的句柄来设置对话框的文本背景颜色
+        /// The WM_HSCROLL message is sent to a window when a scroll event occurs in the window's standard horizontal scroll bar. This message is also sent to the owner of a horizontal scroll bar control when a scroll event occurs in the control. 
         /// </summary>
-        WM_CTLCOLORDLG = 0x0136,
-
+        HSCROLL = 0x0114,
         /// <summary>
-        ///  当一个滚动条控件将要被绘制时发送此消息给它的父窗口；通过响应这条消息，230.          所有者窗口可以通过使用给定的相关显示设备231. 的句柄来设置滚动条的背景颜色
+        /// The WM_VSCROLL message is sent to a window when a scroll event occurs in the window's standard vertical scroll bar. This message is also sent to the owner of a vertical scroll bar control when a scroll event occurs in the control. 
         /// </summary>
-        WM_CTLCOLORSCROLLBAR = 0x0137,
-
+        VSCROLL = 0x0115,
         /// <summary>
-        ///  当一个静态控件将要被绘制时发送此消息给它的父窗口；通过响应这条消息，233. 所        有者窗口可以通过使用给定的相关显示设备234. 的句柄来设置静态控件的文本和背景颜色
+        /// The WM_INITMENU message is sent when a menu is about to become active. It occurs when the user clicks an item on the menu bar or presses a menu key. This allows the application to modify the menu before it is displayed. 
         /// </summary>
-        WM_CTLCOLORSTATIC = 0x0138,
-
+        INITMENU = 0x0116,
         /// <summary>
-        ///      移动鼠标236. 
+        /// The WM_INITMENUPOPUP message is sent when a drop-down menu or submenu is about to become active. This allows an application to modify the menu before it is displayed, without changing the entire menu. 
         /// </summary>
-        WM_MOUSEMOVE = 0x0200,
-
+        INITMENUPOPUP = 0x0117,
         /// <summary>
-        ///     按下鼠标238. 左键
+        /// The WM_MENUSELECT message is sent to a menu's owner window when the user selects a menu item. 
         /// </summary>
-        WM_LBUTTONDOWN = 0x0201,
-
+        MENUSELECT = 0x011F,
         /// <summary>
-        ///     释放鼠标240. 左键
+        /// The WM_MENUCHAR message is sent when a menu is active and the user presses a key that does not correspond to any mnemonic or accelerator key. This message is sent to the window that owns the menu. 
         /// </summary>
-        WM_LBUTTONUP = 0x0202,
-
+        MENUCHAR = 0x0120,
         /// <summary>
-        ///      双击鼠标242. 左键
+        /// The WM_ENTERIDLE message is sent to the owner window of a modal dialog box or menu that is entering an idle state. A modal dialog box or menu enters an idle state when no messages are waiting in its queue after it has processed one or more previous messages. 
         /// </summary>
-        WM_LBUTTONDBLCLK = 0x0203,
-
+        ENTERIDLE = 0x0121,
         /// <summary>
-        ///    按下鼠标244. 右键
+        /// The WM_MENURBUTTONUP message is sent when the user releases the right mouse button while the cursor is on a menu item. 
         /// </summary>
-        WM_RBUTTONDOWN = 0x0204,
-
+        MENURBUTTONUP = 0x0122,
         /// <summary>
-        ///     释放鼠标246. 右键
+        /// The WM_MENUDRAG message is sent to the owner of a drag-and-drop menu when the user drags a menu item. 
         /// </summary>
-        WM_RBUTTONUP = 0x0205,
-
+        MENUDRAG = 0x0123,
         /// <summary>
-        ///    双击鼠标248. 右键
+        /// The WM_MENUGETOBJECT message is sent to the owner of a drag-and-drop menu when the mouse cursor enters a menu item or moves from the center of the item to the top or bottom of the item. 
         /// </summary>
-        WM_RBUTTONDBLCLK = 0x0206,
-
+        MENUGETOBJECT = 0x0124,
         /// <summary>
-        ///    按下鼠标250. 中键
+        /// The WM_UNINITMENUPOPUP message is sent when a drop-down menu or submenu has been destroyed. 
         /// </summary>
-        WM_MBUTTONDOWN = 0x0207,
-
+        UNINITMENUPOPUP = 0x0125,
         /// <summary>
-        ///     释放鼠标252. 中键
+        /// The WM_MENUCOMMAND message is sent when the user makes a selection from a menu. 
         /// </summary>
-        WM_MBUTTONUP = 0x0208,
-
+        MENUCOMMAND = 0x0126,
         /// <summary>
-        ///    双击鼠标254. 中键
+        /// An application sends the WM_CHANGEUISTATE message to indicate that the user interface (UI) state should be changed.
         /// </summary>
-        WM_MBUTTONDBLCLK = 0x0209,
-
+        CHANGEUISTATE = 0x0127,
         /// <summary>
-        ///   当鼠标256. 轮子转动时发送此消息个当前有焦点的控件
+        /// An application sends the WM_UPDATEUISTATE message to change the user interface (UI) state for the specified window and all its child windows.
         /// </summary>
-        WM_MOUSEWHEEL = 0x020A,
-
+        UPDATEUISTATE = 0x0128,
         /// <summary>
-        ///  当MDI子窗口被创建或被销毁，258. 或用户按了一下鼠标259. 键而260. 光标261. 在子窗口上时发送此消       息给它的父窗口
+        /// An application sends the WM_QUERYUISTATE message to retrieve the user interface (UI) state for a window.
         /// </summary>
-        WM_PARENTNOTIFY = 0x0210,
-
+        QUERYUISTATE = 0x0129,
         /// <summary>
-        ///  发送此消息通知应用程序的主窗口that已经进入了菜单循环模式
+        /// The WM_CTLCOLORMSGBOX message is sent to the owner window of a message box before Windows draws the message box. By responding to this message, the owner window can set the text and background colors of the message box by using the given display device context handle. 
         /// </summary>
-        WM_ENTERMENULOOP = 0x0211,
-
+        CTLCOLORMSGBOX = 0x0132,
         /// <summary>
-        ///  发送此消息通知应用程序的主窗口that已退出了菜单循环模式
+        /// An edit control that is not read-only or disabled sends the WM_CTLCOLOREDIT message to its parent window when the control is about to be drawn. By responding to this message, the parent window can use the specified device context handle to set the text and background colors of the edit control. 
         /// </summary>
-        WM_EXITMENULOOP = 0x0212,
-
+        CTLCOLOREDIT = 0x0133,
         /// <summary>
-        /// 
+        /// Sent to the parent window of a list box before the system draws the list box. By responding to this message, the parent window can set the text and background colors of the list box by using the specified display device context handle. 
         /// </summary>
-        WM_NEXTMENU = 0x0213,
-
+        CTLCOLORLISTBOX = 0x0134,
         /// <summary>
-        ///    当用户正在调整窗口大小时发送此消息给窗口；通过此消息应用程序可以监视窗口大       小和位置也可以修改他们
+        /// The WM_CTLCOLORBTN message is sent to the parent window of a button before drawing the button. The parent window can change the button's text and background colors. However, only owner-drawn buttons respond to the parent window processing this message. 
         /// </summary>
-        WM_SIZING = 0x32,
-
+        CTLCOLORBTN = 0x0135,
         /// <summary>
-        ///  发送此消息给窗口当它失去捕获的鼠标267. 时；
+        /// The WM_CTLCOLORDLG message is sent to a dialog box before the system draws the dialog box. By responding to this message, the dialog box can set its text and background colors using the specified display device context handle. 
         /// </summary>
-        WM_CAPTURECHANGED = 0x33,
-
+        CTLCOLORDLG = 0x0136,
         /// <summary>
-        ///    当用户在移动窗口时发送此消息，269. 通过此消息应用程序可以监视窗口大小和位置也可       以修改他们；
+        /// The WM_CTLCOLORSCROLLBAR message is sent to the parent window of a scroll bar control when the control is about to be drawn. By responding to this message, the parent window can use the display context handle to set the background color of the scroll bar control. 
         /// </summary>
-        WM_MOVING = 0x34,
-
+        CTLCOLORSCROLLBAR = 0x0137,
         /// <summary>
-        ///  此消息发送给应用程序来通知它有关电源管理事件；
+        /// A static control, or an edit control that is read-only or disabled, sends the WM_CTLCOLORSTATIC message to its parent window when the control is about to be drawn. By responding to this message, the parent window can use the specified device context handle to set the text and background colors of the static control. 
         /// </summary>
-        WM_POWERBROADCAST = 0x36,
-
+        CTLCOLORSTATIC = 0x0138,
         /// <summary>
-        ///   当设备272. 的硬件配置改变时发送此消息给应用程序或设备273. 驱动程序
+        /// Use WM_MOUSEFIRST to specify the first mouse message. Use the PeekMessage() Function.
         /// </summary>
-        WM_DEVICECHANGE = 0x37,
-
+        MOUSEFIRST = 0x0200,
         /// <summary>
-        ///  
+        /// The WM_MOUSEMOVE message is posted to a window when the cursor moves. If the mouse is not captured, the message is posted to the window that contains the cursor. Otherwise, the message is posted to the window that has captured the mouse.
         /// </summary>
-        WM_IME_STARTCOMPOSITION = 0x010D,
-
+        MOUSEMOVE = 0x0200,
         /// <summary>
-        /// 
+        /// The WM_LBUTTONDOWN message is posted when the user presses the left mouse button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse.
         /// </summary>
-        WM_IME_ENDCOMPOSITION = 0x010E,
-
+        LBUTTONDOWN = 0x0201,
         /// <summary>
-        /// 
+        /// The WM_LBUTTONUP message is posted when the user releases the left mouse button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse.
         /// </summary>
-        WM_IME_COMPOSITION = 0x010F,
-
+        LBUTTONUP = 0x0202,
         /// <summary>
-        /// 
+        /// The WM_LBUTTONDBLCLK message is posted when the user double-clicks the left mouse button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse.
         /// </summary>
-        WM_IME_KEYLAST = 0x010F,
-
+        LBUTTONDBLCLK = 0x0203,
         /// <summary>
-        /// 
+        /// The WM_RBUTTONDOWN message is posted when the user presses the right mouse button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse.
         /// </summary>
-        WM_IME_SETCONTEXT = 0x0281,
-
+        RBUTTONDOWN = 0x0204,
         /// <summary>
-        /// 
+        /// The WM_RBUTTONUP message is posted when the user releases the right mouse button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse.
         /// </summary>
-        WM_IME_NOTIFY = 0x0282,
-
+        RBUTTONUP = 0x0205,
         /// <summary>
-        /// 
+        /// The WM_RBUTTONDBLCLK message is posted when the user double-clicks the right mouse button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse.
         /// </summary>
-        WM_IME_CONTROL = 0x0283,
-
+        RBUTTONDBLCLK = 0x0206,
         /// <summary>
-        /// 
+        /// The WM_MBUTTONDOWN message is posted when the user presses the middle mouse button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse.
         /// </summary>
-        WM_IME_COMPOSITIONFULL = 0x0284,
-
+        MBUTTONDOWN = 0x0207,
         /// <summary>
-        /// 
+        /// The WM_MBUTTONUP message is posted when the user releases the middle mouse button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse.
         /// </summary>
-        WM_IME_SELECT = 0x0285,
-
+        MBUTTONUP = 0x0208,
         /// <summary>
-        /// 
+        /// The WM_MBUTTONDBLCLK message is posted when the user double-clicks the middle mouse button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse.
         /// </summary>
-        WM_IME_CHAR = 0x0286,
-
+        MBUTTONDBLCLK = 0x0209,
         /// <summary>
-        /// 
+        /// The WM_MOUSEWHEEL message is sent to the focus window when the mouse wheel is rotated. The DefWindowProc function propagates the message to the window's parent. There should be no internal forwarding of the message, since DefWindowProc propagates it up the parent chain until it finds a window that processes it.
         /// </summary>
-        WM_IME_REQUEST = 0x0288,
-
+        MOUSEWHEEL = 0x020A,
         /// <summary>
-        /// 
+        /// The WM_XBUTTONDOWN message is posted when the user presses the first or second X button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse. 
         /// </summary>
-        WM_IME_KEYDOWN = 0x0290,
-
+        XBUTTONDOWN = 0x020B,
         /// <summary>
-        /// 
+        /// The WM_XBUTTONUP message is posted when the user releases the first or second X button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse.
         /// </summary>
-        WM_IME_KEYUP = 0x0291,
-
+        XBUTTONUP = 0x020C,
         /// <summary>
-        ///   应用程序发送此消息给多文档的客户窗口来创建一个MDI子窗口
+        /// The WM_XBUTTONDBLCLK message is posted when the user double-clicks the first or second X button while the cursor is in the client area of a window. If the mouse is not captured, the message is posted to the window beneath the cursor. Otherwise, the message is posted to the window that has captured the mouse.
         /// </summary>
-        WM_MDICREATE = 0x0220,
-
+        XBUTTONDBLCLK = 0x020D,
         /// <summary>
-        ///  应用程序发送此消息给多文档的客户窗口来关闭一个MDI子窗口
+        /// The WM_MOUSEHWHEEL message is sent to the focus window when the mouse's horizontal scroll wheel is tilted or rotated. The DefWindowProc function propagates the message to the window's parent. There should be no internal forwarding of the message, since DefWindowProc propagates it up the parent chain until it finds a window that processes it.
         /// </summary>
-        WM_MDIDESTROY = 0x0221,
-
+        MOUSEHWHEEL = 0x020E,
         /// <summary>
-        ///  应用程序发送此消息给多文档的客户窗口通知客户窗口激活另一个MDI子窗口，290. 当客       户窗口收到此消息后，291. 它发出WM_MDIACTIVE消息给MDI子窗口（未激活）激活它；
+        /// Use WM_MOUSELAST to specify the last mouse message. Used with PeekMessage() Function.
         /// </summary>
-        WM_MDIACTIVATE = 0x0222,
-
+        MOUSELAST = 0x020E,
         /// <summary>
-        ///  程序发送此消息给MDI客户窗口让子窗口从最大最小化恢复293. 到原来大小
+        /// The WM_PARENTNOTIFY message is sent to the parent of a child window when the child window is created or destroyed, or when the user clicks a mouse button while the cursor is over the child window. When the child window is being created, the system sends WM_PARENTNOTIFY just before the CreateWindow or CreateWindowEx function that creates the window returns. When the child window is being destroyed, the system sends the message before any processing to destroy the window takes place.
         /// </summary>
-        WM_MDIRESTORE = 0x0223,
-
+        PARENTNOTIFY = 0x0210,
         /// <summary>
-        ///   程序发送此消息给MDI客户窗口激活下一个或前一个窗口
+        /// The WM_ENTERMENULOOP message informs an application's main window procedure that a menu modal loop has been entered. 
         /// </summary>
-        WM_MDINEXT = 0x0224,
-
+        ENTERMENULOOP = 0x0211,
         /// <summary>
-        ///  程序发送此消息给MDI客户窗口来最大化一个MDI子窗口；
+        /// The WM_EXITMENULOOP message informs an application's main window procedure that a menu modal loop has been exited. 
         /// </summary>
-        WM_MDIMAXIMIZE = 0x0225,
-
+        EXITMENULOOP = 0x0212,
         /// <summary>
-        ///   程序发送此消息给MDI客户窗口以平铺方式重新排列所有MDI子窗口
+        /// The WM_NEXTMENU message is sent to an application when the right or left arrow key is used to switch between the menu bar and the system menu. 
         /// </summary>
-        WM_MDITILE = 0x0226,
-
+        NEXTMENU = 0x0213,
         /// <summary>
-        ///  程序发送此消息给MDI客户窗口以层叠方式重新排列所有MDI子窗口
+        /// The WM_SIZING message is sent to a window that the user is resizing. By processing this message, an application can monitor the size and position of the drag rectangle and, if needed, change its size or position. 
         /// </summary>
-        WM_MDICASCADE = 0x0227,
-
+        SIZING = 0x0214,
         /// <summary>
-        ///  程序发送此消息给MDI客户窗口重新排列所有最小化的MDI子窗口
+        /// The WM_CAPTURECHANGED message is sent to the window that is losing the mouse capture.
         /// </summary>
-        WM_MDIICONARRANGE = 0x0228,
-
+        CAPTURECHANGED = 0x0215,
         /// <summary>
-        ///     程序发送此消息给MDI客户窗口来找到激活的子窗口的句柄
+        /// The WM_MOVING message is sent to a window that the user is moving. By processing this message, an application can monitor the position of the drag rectangle and, if needed, change its position.
         /// </summary>
-        WM_MDIGETACTIVE = 0x0229,
-
+        MOVING = 0x0216,
         /// <summary>
-        ///   程序发送此消息给MDI客户窗口用MDI菜单代替子窗口的菜单
+        /// Notifies applications that a power-management event has occurred.
         /// </summary>
-        WM_MDISETMENU = 0x0230,
-
+        POWERBROADCAST = 0x0218,
         /// <summary>
-        ///  
+        /// Notifies an application of a change to the hardware configuration of a device or the computer.
         /// </summary>
-        WM_ENTERSIZEMOVE = 0x0231,
-
+        DEVICECHANGE = 0x0219,
         /// <summary>
-        /// 
+        /// An application sends the WM_MDICREATE message to a multiple-document interface (MDI) client window to create an MDI child window. 
         /// </summary>
-        WM_EXITSIZEMOVE = 0x0232,
-
+        MDICREATE = 0x0220,
         /// <summary>
-        /// 
+        /// An application sends the WM_MDIDESTROY message to a multiple-document interface (MDI) client window to close an MDI child window. 
         /// </summary>
-        WM_DROPFILES = 0x0233,
-
+        MDIDESTROY = 0x0221,
         /// <summary>
-        /// 
+        /// An application sends the WM_MDIACTIVATE message to a multiple-document interface (MDI) client window to instruct the client window to activate a different MDI child window. 
         /// </summary>
-        WM_MDIREFRESHMENU = 0x0234,
-
+        MDIACTIVATE = 0x0222,
         /// <summary>
-        /// 
+        /// An application sends the WM_MDIRESTORE message to a multiple-document interface (MDI) client window to restore an MDI child window from maximized or minimized size. 
         /// </summary>
-        WM_MOUSEHOVER = 0x02A1,
-
+        MDIRESTORE = 0x0223,
         /// <summary>
-        /// 
+        /// An application sends the WM_MDINEXT message to a multiple-document interface (MDI) client window to activate the next or previous child window. 
         /// </summary>
-        WM_MOUSELEAVE = 0x02A3,
-
+        MDINEXT = 0x0224,
         /// <summary>
-        ///     程序发送此消息给一个编辑框或combobox来删除当前选择的文本
+        /// An application sends the WM_MDIMAXIMIZE message to a multiple-document interface (MDI) client window to maximize an MDI child window. The system resizes the child window to make its client area fill the client window. The system places the child window's window menu icon in the rightmost position of the frame window's menu bar, and places the child window's restore icon in the leftmost position. The system also appends the title bar text of the child window to that of the frame window. 
         /// </summary>
-        WM_CUT = 0x0300,
-
+        MDIMAXIMIZE = 0x0225,
         /// <summary>
-        ///    程序发送此消息给一个编辑框或combobox来复309. 制当前选择的文本到剪贴板
+        /// An application sends the WM_MDITILE message to a multiple-document interface (MDI) client window to arrange all of its MDI child windows in a tile format. 
         /// </summary>
-        WM_COPY = 0x0301,
-
+        MDITILE = 0x0226,
         /// <summary>
-        ///    程序发送此消息给editcontrol或combobox从剪贴板中得到数据
+        /// An application sends the WM_MDICASCADE message to a multiple-document interface (MDI) client window to arrange all its child windows in a cascade format. 
         /// </summary>
-        WM_PASTE = 0x0302,
-
+        MDICASCADE = 0x0227,
         /// <summary>
-        ///    程序发送此消息给editcontrol或combobox清除当前选择的内容；
+        /// An application sends the WM_MDIICONARRANGE message to a multiple-document interface (MDI) client window to arrange all minimized MDI child windows. It does not affect child windows that are not minimized. 
         /// </summary>
-        WM_CLEAR = 0x0303,
-
+        MDIICONARRANGE = 0x0228,
         /// <summary>
-        ///    程序发送此消息给editcontrol或combobox撤消最后一次操作
+        /// An application sends the WM_MDIGETACTIVE message to a multiple-document interface (MDI) client window to retrieve the handle to the active MDI child window. 
         /// </summary>
-        WM_UNDO = 0x0304,
-
+        MDIGETACTIVE = 0x0229,
         /// <summary>
-        /// 
+        /// An application sends the WM_MDISETMENU message to a multiple-document interface (MDI) client window to replace the entire menu of an MDI frame window, to replace the window menu of the frame window, or both. 
         /// </summary>
-        WM_RENDERFORMAT = 0x0305,
-
+        MDISETMENU = 0x0230,
         /// <summary>
-        /// 
+        /// The WM_ENTERSIZEMOVE message is sent one time to a window after it enters the moving or sizing modal loop. The window enters the moving or sizing modal loop when the user clicks the window's title bar or sizing border, or when the window passes the WM_SYSCOMMAND message to the DefWindowProc function and the wParam parameter of the message specifies the SC_MOVE or SC_SIZE value. The operation is complete when DefWindowProc returns. 
+        /// The system sends the WM_ENTERSIZEMOVE message regardless of whether the dragging of full windows is enabled.
         /// </summary>
-        WM_RENDERALLFORMATS = 0x0306,
-
+        ENTERSIZEMOVE = 0x0231,
         /// <summary>
-        ///  当调用ENPTYCLIPBOARD函数时发送此消息给剪贴板的所有者
+        /// The WM_EXITSIZEMOVE message is sent one time to a window, after it has exited the moving or sizing modal loop. The window enters the moving or sizing modal loop when the user clicks the window's title bar or sizing border, or when the window passes the WM_SYSCOMMAND message to the DefWindowProc function and the wParam parameter of the message specifies the SC_MOVE or SC_SIZE value. The operation is complete when DefWindowProc returns. 
         /// </summary>
-        WM_DESTROYCLIPBOARD = 0x0307,
-
+        EXITSIZEMOVE = 0x0232,
         /// <summary>
-        ///   当剪贴板的内容变化时发送此消息给剪贴板观察链的第一个窗口；它允许用剪贴        板观察窗口来显示剪贴板的新内容；
+        /// Sent when the user drops a file on the window of an application that has registered itself as a recipient of dropped files.
         /// </summary>
-        WM_DRAWCLIPBOARD = 0x0308,
-
+        DROPFILES = 0x0233,
         /// <summary>
-        ///   当剪贴板包含CF_OWNERDIPLAY格式的数据并且剪贴板观察窗口的客户区需要重        画；
+        /// An application sends the WM_MDIREFRESHMENU message to a multiple-document interface (MDI) client window to refresh the window menu of the MDI frame window. 
         /// </summary>
-        WM_PAINTCLIPBOARD = 0x0309,
-
+        MDIREFRESHMENU = 0x0234,
         /// <summary>
-        /// 
+        /// Sent to an application when a window is activated. A window receives this message through its WindowProc function. 
         /// </summary>
-        WM_VSCROLLCLIPBOARD = 0x030A,
-
+        IME_SETCONTEXT = 0x0281,
         /// <summary>
-        ///   当剪贴板包含CF_OWNERDIPLAY格式的数据并且剪贴板观察窗口的客户区域的大小        已经改变是此消息通过剪贴板观察窗口发送给剪贴板的所有者；
+        /// Sent to an application to notify it of changes to the IME window. A window receives this message through its WindowProc function. 
         /// </summary>
-        WM_SIZECLIPBOARD = 0x030B,
-
+        IME_NOTIFY = 0x0282,
         /// <summary>
-        ///   通过剪贴板观察窗口发送此消息给剪贴板的所有者来请求一个CF_OWNERDISPLAY        格式的剪贴板的名321. 字
+        /// Sent by an application to direct the IME window to carry out the requested command. The application uses this message to control the IME window that it has created. To send this message, the application calls the SendMessage function with the following parameters.
         /// </summary>
-        WM_ASKCBFORMATNAME = 0x030C,
-
+        IME_CONTROL = 0x0283,
         /// <summary>
-        ///   当一个窗口从剪贴板观察链中移去时发送此消息给剪贴板观察链的第一个窗口；
+        /// Sent to an application when the IME window finds no space to extend the area for the composition window. A window receives this message through its WindowProc function. 
         /// </summary>
-        WM_CHANGECBCHAIN = 0x030D,
-
+        IME_COMPOSITIONFULL = 0x0284,
         /// <summary>
-        ///  此消息通过一个剪贴板观察窗口发送给剪贴板的所有者；它发生在当剪贴板包含        CFOWNERDISPALY格式的数据并且有个事件在剪贴板观察窗的水平滚动条上；所有        者应滚动剪贴板图象并更新滚动条的值；
+        /// Sent to an application when the operating system is about to change the current IME. A window receives this message through its WindowProc function. 
         /// </summary>
-        WM_HSCROLLCLIPBOARD = 0x030E,
-
+        IME_SELECT = 0x0285,
         /// <summary>
-        ///   此消息发送给将要收到焦点的窗口，325. 此消息能使窗口在收到焦点时同326. 时有机会实        现他的逻辑调色板
+        /// Sent to an application when the IME gets a character of the conversion result. A window receives this message through its WindowProc function. 
         /// </summary>
-        WM_QUERYNEWPALETTE = 0x030F,
-
+        IME_CHAR = 0x0286,
         /// <summary>
-        ///      当一个应用程序正要实现它的逻辑调色板时发此消息通知所有的应用程序
+        /// Sent to an application to provide commands and request information. A window receives this message through its WindowProc function.
         /// </summary>
-        WM_PALETTEISCHANGING = 0x0310,
-
+        IME_REQUEST = 0x0288,
         /// <summary>
-        ///   此消息在一个拥有焦点的窗口实现它的逻辑调色板后发送此消息给所有顶级并重        叠的窗口，329. 以此来改变系统调色板
+        /// Sent to an application by the IME to notify the application of a key press and to keep message order. A window receives this message through its WindowProc function. 
         /// </summary>
-        WM_PALETTECHANGED = 0x0311,
-
+        IME_KEYDOWN = 0x0290,
         /// <summary>
-        ///     当用户按下由REGISTERHOTKEY函数注册的热键时提交此消息
+        /// Sent to an application by the IME to notify the application of a key release and to keep message order. A window receives this message through its WindowProc function. 
         /// </summary>
-        WM_HOTKEY = 0x0312,
-
+        IME_KEYUP = 0x0291,
         /// <summary>
-        ///      应用程序发送此消息仅当WINDOWS或其它应用程序发出一个请求要求绘制一个应用程序的一部分；
+        /// The WM_MOUSEHOVER message is posted to a window when the cursor hovers over the client area of the window for the period of time specified in a prior call to TrackMouseEvent.
         /// </summary>
-        WM_PRINT = 0x91,
-
+        MOUSEHOVER = 0x02A1,
         /// <summary>
-        ///  
+        /// The WM_MOUSELEAVE message is posted to a window when the cursor leaves the client area of the window specified in a prior call to TrackMouseEvent.
         /// </summary>
-        WM_PRINTCLIENT = 0x92,
-
+        MOUSELEAVE = 0x02A3,
         /// <summary>
-        /// 
+        /// The WM_NCMOUSEHOVER message is posted to a window when the cursor hovers over the nonclient area of the window for the period of time specified in a prior call to TrackMouseEvent.
         /// </summary>
-        WM_HANDHELDFIRST = 0x56,
-
+        NCMOUSEHOVER = 0x02A0,
         /// <summary>
-        /// 
+        /// The WM_NCMOUSELEAVE message is posted to a window when the cursor leaves the nonclient area of the window specified in a prior call to TrackMouseEvent.
         /// </summary>
-        WM_HANDHELDLAST = 0x63,
-
+        NCMOUSELEAVE = 0x02A2,
         /// <summary>
-        /// 
+        /// The WM_WTSSESSION_CHANGE message notifies applications of changes in session state.
         /// </summary>
-        WM_PENWINFIRST = 0x0380,
-
+        WTSSESSION_CHANGE = 0x02B1,
+        TABLET_FIRST = 0x02c0,
+        TABLET_LAST = 0x02df,
         /// <summary>
-        /// 
+        /// An application sends a WM_CUT message to an edit control or combo box to delete (cut) the current selection, if any, in the edit control and copy the deleted text to the clipboard in CF_TEXT format. 
         /// </summary>
-        WM_PENWINLAST = 0x038F,
-
+        CUT = 0x0300,
         /// <summary>
-        /// 
+        /// An application sends the WM_COPY message to an edit control or combo box to copy the current selection to the clipboard in CF_TEXT format. 
         /// </summary>
-        WM_COALESCE_FIRST = 0x0390,
-
+        COPY = 0x0301,
         /// <summary>
-        /// 
+        /// An application sends a WM_PASTE message to an edit control or combo box to copy the current content of the clipboard to the edit control at the current caret position. Data is inserted only if the clipboard contains data in CF_TEXT format. 
         /// </summary>
-        WM_COALESCE_LAST = 0x039F,
-
+        PASTE = 0x0302,
         /// <summary>
-        /// 
+        /// An application sends a WM_CLEAR message to an edit control or combo box to delete (clear) the current selection, if any, from the edit control. 
         /// </summary>
-        WM_DDE_FIRST = 0x03E0,
-
+        CLEAR = 0x0303,
         /// <summary>
-        ///   一个DDE客户程序提交此消息开始一个与服341. 务器程序的会话来响应那个指342. 定的程序和主题名343. ；
+        /// An application sends a WM_UNDO message to an edit control to undo the last operation. When this message is sent to an edit control, the previously deleted text is restored or the previously added text is deleted.
         /// </summary>
-        WM_DDE_INITIATE = WM_DDE_FIRST + 0,
-
+        UNDO = 0x0304,
         /// <summary>
-        ///  一个DDE应用程序(无论是客户还是服345. 务器)提交此消息来终止一个会话；
+        /// The WM_RENDERFORMAT message is sent to the clipboard owner if it has delayed rendering a specific clipboard format and if an application has requested data in that format. The clipboard owner must render data in the specified format and place it on the clipboard by calling the SetClipboardData function. 
         /// </summary>
-        WM_DDE_TERMINATE = WM_DDE_FIRST + 1,
-
+        RENDERFORMAT = 0x0305,
         /// <summary>
-        ///   一个DDE客户程序提交此消息给一个DDE服347. 务程序来请求服348. 务器每当数          据项改变时更新它
+        /// The WM_RENDERALLFORMATS message is sent to the clipboard owner before it is destroyed, if the clipboard owner has delayed rendering one or more clipboard formats. For the content of the clipboard to remain available to other applications, the clipboard owner must render data in all the formats it is capable of generating, and place the data on the clipboard by calling the SetClipboardData function. 
         /// </summary>
-        WM_DDE_ADVISE = WM_DDE_FIRST + 2,
-
+        RENDERALLFORMATS = 0x0306,
         /// <summary>
-        ///   一个DDE客户程序通过此消息通知一个DDE服350. 务程序不351. 更新指352. 定的项或          一个特殊的剪贴板格式的项
+        /// The WM_DESTROYCLIPBOARD message is sent to the clipboard owner when a call to the EmptyClipboard function empties the clipboard. 
         /// </summary>
-        WM_DDE_UNADVISE = WM_DDE_FIRST + 3,
-
+        DESTROYCLIPBOARD = 0x0307,
         /// <summary>
-        ///   此消息通知一个DDE（动态数据交换）程序已收到并正在处理WM_DDE_POKE,WM_DDE_EXECUTE,WM_DDE_DATA,WM_DDE_ADVISE,WM_DDE_UNADVISE,orWM_DDE_INITIAT消息WM_DDE_DATA=WM_DDE_FIRST+5:一个DDE服354. 务程序提交此消息给DDE客户程序来传递个一数据项给客户或通知客户的一条可用数据项
+        /// The WM_DRAWCLIPBOARD message is sent to the first window in the clipboard viewer chain when the content of the clipboard changes. This enables a clipboard viewer window to display the new content of the clipboard. 
         /// </summary>
-        WM_DDE_ACK = WM_DDE_FIRST + 4,
-
+        DRAWCLIPBOARD = 0x0308,
         /// <summary>
-        ///  一个DDE客户程序提交此消息给一个DDE服356. 务程序来请求一个数据项的值；
+        /// The WM_PAINTCLIPBOARD message is sent to the clipboard owner by a clipboard viewer window when the clipboard contains data in the CF_OWNERDISPLAY format and the clipboard viewer's client area needs repainting. 
         /// </summary>
-        WM_DDE_REQUEST = WM_DDE_FIRST + 6,
-
+        PAINTCLIPBOARD = 0x0309,
         /// <summary>
-        ///   一个DDE客户程序提交此消息给一个DDE服358. 务程序，359. 客户使用此消息来请求服360. 务器接收一个未经同361. 意的数据项；服362. 务器通过答复363. WM_DDE_ACK消息提示是否它接收这个数据项；
+        /// The WM_VSCROLLCLIPBOARD message is sent to the clipboard owner by a clipboard viewer window when the clipboard contains data in the CF_OWNERDISPLAY format and an event occurs in the clipboard viewer's vertical scroll bar. The owner should scroll the clipboard image and update the scroll bar values. 
         /// </summary>
-        WM_DDE_POKE = WM_DDE_FIRST + 7,
-
+        VSCROLLCLIPBOARD = 0x030A,
         /// <summary>
-        ///  一个DDE客户程序提交此消息给一DDE服365. 务程序来发送一个字符串给服366. 务器让它象串行命令一样被处理,服367. 务器通过提交WM_DDE_ACK消息来作回应；
+        /// The WM_SIZECLIPBOARD message is sent to the clipboard owner by a clipboard viewer window when the clipboard contains data in the CF_OWNERDISPLAY format and the clipboard viewer's client area has changed size. 
         /// </summary>
-        WM_DDE_EXECUTE = WM_DDE_FIRST + 8,
-
+        SIZECLIPBOARD = 0x030B,
         /// <summary>
-        ///   
+        /// The WM_ASKCBFORMATNAME message is sent to the clipboard owner by a clipboard viewer window to request the name of a CF_OWNERDISPLAY clipboard format.
         /// </summary>
-        WM_DDE_LAST = WM_DDE_FIRST + 8,
-
+        ASKCBFORMATNAME = 0x030C,
+        /// <summary>
+        /// The WM_CHANGECBCHAIN message is sent to the first window in the clipboard viewer chain when a window is being removed from the chain. 
+        /// </summary>
+        CHANGECBCHAIN = 0x030D,
+        /// <summary>
+        /// The WM_HSCROLLCLIPBOARD message is sent to the clipboard owner by a clipboard viewer window. This occurs when the clipboard contains data in the CF_OWNERDISPLAY format and an event occurs in the clipboard viewer's horizontal scroll bar. The owner should scroll the clipboard image and update the scroll bar values. 
+        /// </summary>
+        HSCROLLCLIPBOARD = 0x030E,
+        /// <summary>
+        /// This message informs a window that it is about to receive the keyboard focus, giving the window the opportunity to realize its logical palette when it receives the focus. 
+        /// </summary>
+        QUERYNEWPALETTE = 0x030F,
+        /// <summary>
+        /// The WM_PALETTEISCHANGING message informs applications that an application is going to realize its logical palette. 
+        /// </summary>
+        PALETTEISCHANGING = 0x0310,
+        /// <summary>
+        /// This message is sent by the OS to all top-level and overlapped windows after the window with the keyboard focus realizes its logical palette. 
+        /// This message enables windows that do not have the keyboard focus to realize their logical palettes and update their client areas.
+        /// </summary>
+        PALETTECHANGED = 0x0311,
+        /// <summary>
+        /// The WM_HOTKEY message is posted when the user presses a hot key registered by the RegisterHotKey function. The message is placed at the top of the message queue associated with the thread that registered the hot key. 
+        /// </summary>
+        HOTKEY = 0x0312,
+        /// <summary>
+        /// The WM_PRINT message is sent to a window to request that it draw itself in the specified device context, most commonly in a printer device context.
+        /// </summary>
+        PRINT = 0x0317,
+        /// <summary>
+        /// The WM_PRINTCLIENT message is sent to a window to request that it draw its client area in the specified device context, most commonly in a printer device context.
+        /// </summary>
+        PRINTCLIENT = 0x0318,
+        /// <summary>
+        /// The WM_APPCOMMAND message notifies a window that the user generated an application command event, for example, by clicking an application command button using the mouse or typing an application command key on the keyboard.
+        /// </summary>
+        APPCOMMAND = 0x0319,
+        /// <summary>
+        /// The WM_THEMECHANGED message is broadcast to every window following a theme change event. Examples of theme change events are the activation of a theme, the deactivation of a theme, or a transition from one theme to another.
+        /// </summary>
+        THEMECHANGED = 0x031A,
+        /// <summary>
+        /// Sent when the contents of the clipboard have changed.
+        /// </summary>
+        CLIPBOARDUPDATE = 0x031D,
+        /// <summary>
+        /// The system will send a window the WM_DWMCOMPOSITIONCHANGED message to indicate that the availability of desktop composition has changed.
+        /// </summary>
+        DWMCOMPOSITIONCHANGED = 0x031E,
         /// <summary>
-        /// 
+        /// WM_DWMNCRENDERINGCHANGED is called when the non-client area rendering status of a window has changed. Only windows that have set the flag DWM_BLURBEHIND.fTransitionOnMaximized to true will get this message. 
         /// </summary>
-        WM_APP = 0x8000,
+        DWMNCRENDERINGCHANGED = 0x031F,
+        /// <summary>
+        /// Sent to all top-level windows when the colorization color has changed. 
+        /// </summary>
+        DWMCOLORIZATIONCOLORCHANGED = 0x0320,
+        /// <summary>
+        /// WM_DWMWINDOWMAXIMIZEDCHANGE will let you know when a DWM composed window is maximized. You also have to register for this message as well. You'd have other windowd go opaque when this message is sent.
+        /// </summary>
+        DWMWINDOWMAXIMIZEDCHANGE = 0x0321,
+        /// <summary>
+        /// Sent to request extended title bar information. A window receives this message through its WindowProc function.
+        /// </summary>
+        GETTITLEBARINFOEX = 0x033F,
+        HANDHELDFIRST = 0x0358,
+        HANDHELDLAST = 0x035F,
+        AFXFIRST = 0x0360,
+        AFXLAST = 0x037F,
+        PENWINFIRST = 0x0380,
+        PENWINLAST = 0x038F,
+        /// <summary>
+        /// The WM_APP constant is used by applications to help define private messages, usually of the form WM_APP+X, where X is an integer value. 
+        /// </summary>
+        APP = 0x8000,
+        /// <summary>
+        /// The WM_USER constant is used by applications to help define private messages for use by private window classes, usually of the form WM_USER+X, where X is an integer value. 
+        /// </summary>
+        USER = 0x0400,
 
+        /// <summary>
+        /// An application sends the WM_CPL_LAUNCH message to Windows Control Panel to request that a Control Panel application be started. 
+        /// </summary>
+        CPL_LAUNCH = USER + 0x1000,
         /// <summary>
-        ///  此消息能帮助应用程序自定义私有消息；
+        /// The WM_CPL_LAUNCHED message is sent when a Control Panel application, started by the WM_CPL_LAUNCH message, has closed. The WM_CPL_LAUNCHED message is sent to the window identified by the wParam parameter of the WM_CPL_LAUNCH message that started the application.
         /// </summary>
-        WM_USER = 0x0400,
+        CPL_LAUNCHED = USER + 0x1001,
+        /// <summary>
+        /// WM_SYSTIMER is a well-known yet still undocumented message. Windows uses WM_SYSTIMER for internal actions like scrolling.
+        /// </summary>
+        SYSTIMER = 0x118,
+
+
+        DPICHANGED = 0x02E0,
     }
 }

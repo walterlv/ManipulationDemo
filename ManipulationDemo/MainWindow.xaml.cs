@@ -12,7 +12,6 @@ using System.Windows.Interop;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using ManipulationDemo.Properties;
-using WpfUsbMonitor;
 using System.Management;
 
 namespace ManipulationDemo
