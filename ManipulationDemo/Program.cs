@@ -59,8 +59,8 @@ namespace ManipulationDemo
             var shellType = Type.GetTypeFromProgID("WScript.Shell");
             dynamic shell = Activator.CreateInstance(shellType);
             var shortcut = shell.CreateShortcut(lnkFilePath);
-            shortcut.TargetPath = $@"""{Assembly.GetEntryAssembly().Location} {args}""";
-            shortcut.WorkingDirectory = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+            shortcut.TargetPath = $@"""{Assembly.GetEntryAssembly().Location}"" {args}";
+            shortcut.WorkingDirectory = $@"""{AppDomain.CurrentDomain.SetupInformation.ApplicationBase}""";
             shortcut.Save();
         }
 
