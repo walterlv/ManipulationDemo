@@ -141,7 +141,10 @@
             </Border>
         </UniformGrid>
         <TextBlock x:Name="HwndMsgTextBlock" IsHitTestVisible="False"
-                   HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8"/>
+                   HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8 8 8 16"/>
+        <TextBlock x:Name="DeviceChangeListenerTextBlock" IsHitTestVisible="False"
+                   HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="8"
+                   Text="检测硬件设备插拔：&#xD;" />
         <TextBlock x:Name="PropertiesTextBlock" IsHitTestVisible="False"
                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
                    Margin="8" TextAlignment="Right">
@@ -157,8 +160,8 @@
             <Run Text="StylusLogic.IsStylusAndTouchSupportEnabled ="/>
             <Run x:Name="IsStylusAndTouchSupportEnabledRun"/>
         </TextBlock>
-        <CheckBox HorizontalAlignment="Center" VerticalAlignment="Bottom"
-                  Margin="16 8" Content="IsManipulationEnabled"
+        <CheckBox HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                  Margin="8" Content="IsManipulationEnabled"
                   IsChecked="{Binding IsManipulationEnabled, ElementName=DrawingArea, Mode=TwoWay}"/>
     </Grid>
 </Window>

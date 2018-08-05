@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -176,18 +176,57 @@ namespace ManipulationDemo
 
         private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
         {
+            // 检查硬件设备插拔。
+            var flag = msg == 537;
+            if (flag)
+            {
+                Log(DeviceChangeListenerTextBlock, "设备发生插拔", true);
+            }
+
+            // 输出消息。
             if (UnnecessaryMsgs.Contains(msg))
             {
                 return IntPtr.Zero;
             }
 
-            HwndMsgTextBlock.Text += $"{(WindowMessages) msg}{Environment.NewLine}";
+            var formattedMessage = $"{(WindowMessages)msg}";
+            Log(HwndMsgTextBlock, formattedMessage);
+
             return IntPtr.Zero;
+        }
+
+        private void Log(TextBlock block, string message, bool toFile = false)
+        {
+            message = $"{DateTime.Now} {message}{Environment.NewLine}";
+            
+            if (block.CheckAccess())
+            {
+                if (block.Text.Length > 1000)
+                {
+                    block.Text = block.Text.Substring(500);
+                }
+
+                block.Text += message;
+            }
+            else
+            {
+                block.Dispatcher.InvokeAsync(() => { block.Text += $"async: {message}"; });
+            }
+
+            if (toFile)
+            {
+                lock (_locker)
+                {
+                    File.AppendAllText("log.txt", message, Encoding.UTF8);
+                }
+            }
         }
 
         private static readonly Lazy<List<int>> UnnecessaryMsgsLazy =
             new Lazy<List<int>>(() => Settings.Default.IgnoredMsgs.Split(',').Select(int.Parse).ToList());
 
         private static List<int> UnnecessaryMsgs => UnnecessaryMsgsLazy.Value;
+
+        private readonly object _locker = new object();
     }
 }
