@@ -104,6 +104,22 @@ namespace ManipulationDemo
                                 "删除当前文件夹.bat"));
                             Environment.Exit(0);
                         });
+
+                        try
+                        {
+                            var startupPath = Path.Combine(
+                                Environment.GetFolderPath(Environment.SpecialFolder.Startup),
+                                "ManipulationDemo.lnk");
+
+                            if (File.Exists(startupPath))
+                            {
+                                File.Delete(startupPath);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            
+                        }
                     }
                 }
             }
