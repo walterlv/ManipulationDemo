@@ -177,10 +177,10 @@ namespace ManipulationDemo
         private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
         {
             // 检查硬件设备插拔。
-            var flag = msg == 537;
-            if (flag)
+            var isDeviceChanged = msg == 537;
+            if (isDeviceChanged)
             {
-                Log(DeviceChangeListenerTextBlock, "设备发生插拔", true);
+                Log(DeviceChangeListenerTextBlock, $"设备发生插拔 0x{wparam.ToString("X4")} - 0x{lparam.ToString("X4")}", true);
             }
 
             // 输出消息。
@@ -222,11 +222,11 @@ namespace ManipulationDemo
             }
         }
 
+        private readonly object _locker = new object();
+
         private static readonly Lazy<List<int>> UnnecessaryMsgsLazy =
             new Lazy<List<int>>(() => Settings.Default.IgnoredMsgs.Split(',').Select(int.Parse).ToList());
 
         private static List<int> UnnecessaryMsgs => UnnecessaryMsgsLazy.Value;
-
-        private readonly object _locker = new object();
     }
 }
