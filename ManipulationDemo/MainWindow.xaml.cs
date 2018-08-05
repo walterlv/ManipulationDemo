@@ -12,6 +12,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using ManipulationDemo.Properties;
 using System.Management;
+using System.Threading;
 
 namespace ManipulationDemo
 {
@@ -24,6 +25,14 @@ namespace ManipulationDemo
         {
             InitializeComponent();
             this.RemoveIcon();
+
+            var args = Environment.GetCommandLineArgs();
+            if (args.Contains("--startup"))
+            {
+                // 开机启动期间，等待一段时间。这样最小化的时候就有任务栏来承载它。
+                Thread.Sleep(5000);
+                WindowState = WindowState.Minimized;
+            }
 
             _timer = new DispatcherTimer
             {
