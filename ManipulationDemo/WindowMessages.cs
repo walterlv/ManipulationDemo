@@ -774,6 +774,8 @@ namespace ManipulationDemo
         /// </summary>
         WTSSESSION_CHANGE = 0x02B1,
         TABLET_FIRST = 0x02c0,
+        TABLET_ADDED = 0x02c8,
+        TABLET_DELETED = 0x02c9,
         TABLET_LAST = 0x02df,
         /// <summary>
         /// An application sends a WM_CUT message to an edit control or combo box to delete (cut) the current selection, if any, in the edit control and copy the deleted text to the clipboard in CF_TEXT format. 

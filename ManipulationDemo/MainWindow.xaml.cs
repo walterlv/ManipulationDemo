@@ -229,10 +229,17 @@ namespace ManipulationDemo
         private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
         {
             // 检查硬件设备插拔。
-            var isDeviceChanged = msg == 537;
-            if (isDeviceChanged)
+            if (msg == (int) WindowMessages.DEVICECHANGE)
             {
                 Log(DeviceChangeListenerTextBlock, $"设备发生插拔 0x{wparam.ToString("X4")} - 0x{lparam.ToString("X4")}", true);
+            }
+            else if (msg == (int) WindowMessages.TABLET_ADDED)
+            {
+                Log(DeviceChangeListenerTextBlock, $"触摸设备插入 0x{wparam.ToString("X4")} - 0x{lparam.ToString("X4")}", true);
+            }
+            else if (msg == (int) WindowMessages.TABLET_DELETED)
+            {
+                Log(DeviceChangeListenerTextBlock, $"触摸设备拔出 0x{wparam.ToString("X4")} - 0x{lparam.ToString("X4")}", true);
             }
 
             // 输出消息。
