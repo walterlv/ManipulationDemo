@@ -12,6 +12,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using ManipulationDemo.Properties;
 using System.Management;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 
 namespace ManipulationDemo
@@ -40,6 +41,8 @@ namespace ManipulationDemo
             };
             _timer.Tick += OnTick;
             _timer.Start();
+
+            AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
 
             WqlEventQuery insertQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
 
@@ -242,6 +245,27 @@ namespace ManipulationDemo
             Log(HwndMsgTextBlock, formattedMessage);
 
             return IntPtr.Zero;
+        }
+
+        private void CurrentDomain_FirstChanceException(object sender, FirstChanceExceptionEventArgs e)
+        {
+            AppDomain.CurrentDomain.FirstChanceException -= CurrentDomain_FirstChanceException;
+            try
+            {
+                Log(DeviceChangeListenerTextBlock, $@"第一次机会异常
+{e.Exception.GetType()}
+{e.Exception.Message}", false);
+                Log($@"第一次机会异常：
+{e.Exception}
+
+");
+            }
+            finally
+            {
+                // 注意，如果以上 try 块内部发生异常，那么此方法可能发生重入；所以此处必须先 -=。
+                AppDomain.CurrentDomain.FirstChanceException -= CurrentDomain_FirstChanceException;
+                AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
+            }
         }
 
         private void Log(TextBlock block, string message, bool toFile = false)
