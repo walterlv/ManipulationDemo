@@ -14,6 +14,7 @@ using ManipulationDemo.Properties;
 using System.Management;
 using System.Runtime.ExceptionServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ManipulationDemo
 {
@@ -224,6 +225,9 @@ namespace ManipulationDemo
             base.OnSourceInitialized(e);
             var source = (HwndSource) PresentationSource.FromVisual(this);
             source?.AddHook(HwndHook);
+
+            Log("程序启动时");
+            LogDevices();
         }
 
         private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
@@ -232,6 +236,7 @@ namespace ManipulationDemo
             if (msg == (int) WindowMessages.DEVICECHANGE)
             {
                 Log(DeviceChangeListenerTextBlock, $"设备发生插拔 0x{wparam.ToString("X4")} - 0x{lparam.ToString("X4")}", true);
+                LogDevices();
             }
             else if (msg == (int) WindowMessages.TABLET_ADDED)
             {
@@ -273,6 +278,45 @@ namespace ManipulationDemo
                 AppDomain.CurrentDomain.FirstChanceException -= CurrentDomain_FirstChanceException;
                 AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
             }
+        }
+
+        private bool _isLogDevicesEnabled = true;
+
+        private async void LogDevices()
+        {
+            if (_isLogDevicesEnabled)
+            {
+                _isLogDevicesEnabled = false;
+                try
+                {
+                    await Task.Run(() => { LogDevicesCore(); });
+                }
+                catch
+                {
+                    Log("获取 USB 设备炸掉了。\r\n");
+                }
+                finally
+                {
+                    if (_isLogDevicesEnabled)
+                    {
+                        LogDevices();
+                    }
+                }
+            }
+            else
+            {
+                _isLogDevicesEnabled = true;
+            }
+        }
+
+        private void LogDevicesCore()
+        {
+            var devices = USBDeviceInfo.GetAll();
+            var deviceString = string.Join(Environment.NewLine, devices);
+            Log($@"枚举 USB 设备：
+{deviceString}
+
+");
         }
 
         private void Log(TextBlock block, string message, bool toFile = false)

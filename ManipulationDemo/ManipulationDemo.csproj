@@ -65,6 +65,7 @@
     <Compile Include="Taskbar.cs" />
     <Compile Include="TouchTabletCollection.cs" />
     <Compile Include="Refin.cs" />
+    <Compile Include="UsbDeviceInfo.cs" />
     <Compile Include="WindowIconExtensions.cs" />
     <Compile Include="WindowMessages.cs" />
     <Page Include="MainWindow.xaml">
