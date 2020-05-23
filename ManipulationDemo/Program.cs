@@ -22,10 +22,10 @@ namespace ManipulationDemo
             {
                 var hwnd = FindWindow(null, "触摸以监视");
                 ShowWindow(hwnd, 9);
-#if DEBUG
-                ApplicationDestroyer.DeleteTime = TimeSpan.FromSeconds(10);
-#endif
-                ApplicationDestroyer.CheckAndDelete();
+//#if DEBUG
+//                ApplicationDestroyer.DeleteTime = TimeSpan.FromSeconds(10);
+//#endif
+//                ApplicationDestroyer.CheckAndDelete();
             }
             catch (Exception)
             {
