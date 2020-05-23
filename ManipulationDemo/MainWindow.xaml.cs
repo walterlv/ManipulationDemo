@@ -26,6 +26,17 @@ namespace ManipulationDemo
         public MainWindow()
         {
             InitializeComponent();
+
+            Topmost = true;
+
+            Dispatcher.InvokeAsync(async () =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(10));
+                Topmost = false;
+            });
+
+            Application.Current.MainWindow = this;
+
             this.RemoveIcon();
 
             var args = Environment.GetCommandLineArgs();
@@ -45,44 +56,59 @@ namespace ManipulationDemo
 
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
 
-            WqlEventQuery insertQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
-
-            ManagementEventWatcher insertWatcher = new ManagementEventWatcher(insertQuery);
-            insertWatcher.EventArrived += (s, e) =>
+            var timer= new DispatcherTimer()
             {
-                var str = new StringBuilder();
-               str.Append("插入设备");
-
-                var instance = (ManagementBaseObject) e.NewEvent["TargetInstance"];
-                var description = instance.Properties["Description"];
-
-                str.Append(description.Name + " = " + description.Value);
-
-                var deviceId = instance.Properties["DeviceID"];
-                str.Append(deviceId.Name + " = " + deviceId.Value);
-
-                Log($"{DateTime.Now} {str.ToString()} {Environment.NewLine}");
+                Interval = TimeSpan.FromMilliseconds(10)
             };
-            insertWatcher.Start();
 
-            WqlEventQuery removeQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
-            ManagementEventWatcher removeWatcher = new ManagementEventWatcher(removeQuery);
-            removeWatcher.EventArrived += (s, e) =>
-            {
-                var str = new StringBuilder();
-                str.Append("移除设备");
+           timer.Tick += (sender, eventArgs) =>
+           {
+               for (int i = 0; i < 200000000; i++)
+               {
+                   
+               }
+           };
 
-                var instance = (ManagementBaseObject) e.NewEvent["TargetInstance"];
-                var description = instance.Properties["Description"];
+           timer.Start();
 
-                str.Append(description.Name + " = " + description.Value);
+           //WqlEventQuery insertQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
 
-                var deviceId = instance.Properties["DeviceID"];
-                str.Append(deviceId.Name + " = " + deviceId.Value);
+           //ManagementEventWatcher insertWatcher = new ManagementEventWatcher(insertQuery);
+           //insertWatcher.EventArrived += (s, e) =>
+           //{
+           //    var str = new StringBuilder();
+           //   str.Append("插入设备");
 
-                Log($"{DateTime.Now} {str.ToString()} {Environment.NewLine}");
-            };
-            removeWatcher.Start();
+           //    var instance = (ManagementBaseObject) e.NewEvent["TargetInstance"];
+           //    var description = instance.Properties["Description"];
+
+           //    str.Append(description.Name + " = " + description.Value);
+
+           //    var deviceId = instance.Properties["DeviceID"];
+           //    str.Append(deviceId.Name + " = " + deviceId.Value);
+
+           //    Log($"{DateTime.Now} {str.ToString()} {Environment.NewLine}");
+           //};
+           //insertWatcher.Start();
+
+           //WqlEventQuery removeQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
+           //ManagementEventWatcher removeWatcher = new ManagementEventWatcher(removeQuery);
+           //removeWatcher.EventArrived += (s, e) =>
+           //{
+           //    var str = new StringBuilder();
+           //    str.Append("移除设备");
+
+           //    var instance = (ManagementBaseObject) e.NewEvent["TargetInstance"];
+           //    var description = instance.Properties["Description"];
+
+           //    str.Append(description.Name + " = " + description.Value);
+
+           //    var deviceId = instance.Properties["DeviceID"];
+           //    str.Append(deviceId.Name + " = " + deviceId.Value);
+
+           //    Log($"{DateTime.Now} {str.ToString()} {Environment.NewLine}");
+           //};
+           //removeWatcher.Start();
         }
 
         private Storyboard StylusDownStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.StylusDown");
@@ -173,7 +199,11 @@ namespace ManipulationDemo
         private void OnTouchDown(object sender, TouchEventArgs e)
         {
             TouchDownStoryboard.Begin();
+
+            _lastEventArgs = e;
         }
+
+        private TouchEventArgs _lastEventArgs;
 
         private void OnTouchMove(object sender, TouchEventArgs e)
         {
@@ -188,6 +218,20 @@ namespace ManipulationDemo
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             MouseDownStoryboard.Begin();
+
+            if (e.StylusDevice != null)
+            {
+            }
+            else
+            {
+                _lastEventArgs.RoutedEvent = PreviewTouchDownEvent;
+                System.Windows.Input.InputManager.Current.ProcessInput(_lastEventArgs);
+                _lastEventArgs.RoutedEvent = PreviewTouchMoveEvent;
+                System.Windows.Input.InputManager.Current.ProcessInput(_lastEventArgs);
+                _lastEventArgs.RoutedEvent = PreviewTouchUpEvent;
+                System.Windows.Input.InputManager.Current.ProcessInput(_lastEventArgs);
+
+            }
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
@@ -357,5 +401,10 @@ namespace ManipulationDemo
             new Lazy<List<int>>(() => Settings.Default.IgnoredMsgs.Split(',').Select(int.Parse).ToList());
 
         private static List<int> UnnecessaryMsgs => UnnecessaryMsgsLazy.Value;
+
+        private void Exit_OnClick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
     }
 }

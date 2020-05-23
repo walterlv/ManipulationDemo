@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ManipulationDemo"
-        mc:Ignorable="d" Title="触摸以监视">
+        WindowStyle="None" WindowState="Maximized" ResizeMode="NoResize"  mc:Ignorable="d" Title="触摸以监视">
     <Window.Style>
         <Style TargetType="Window">
             <Style.Triggers>
@@ -172,5 +172,6 @@
         <CheckBox HorizontalAlignment="Left" VerticalAlignment="Bottom"
                   Margin="8" Content="IsManipulationEnabled"
                   IsChecked="{Binding IsManipulationEnabled, ElementName=DrawingArea, Mode=TwoWay}"/>
+        <Button Margin="10,10,10,10" Content="x" HorizontalAlignment="Right" VerticalAlignment="Top" Click="Exit_OnClick"></Button>
     </Grid>
 </Window>
