@@ -44,45 +44,52 @@ namespace ManipulationDemo
             _timer.Start();
 
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
-
-            WqlEventQuery insertQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
-
-            ManagementEventWatcher insertWatcher = new ManagementEventWatcher(insertQuery);
-            insertWatcher.EventArrived += (s, e) =>
+        
+            try
             {
-                var str = new StringBuilder();
-               str.Append("插入设备");
+                WqlEventQuery insertQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
 
-                var instance = (ManagementBaseObject) e.NewEvent["TargetInstance"];
-                var description = instance.Properties["Description"];
+                ManagementEventWatcher insertWatcher = new ManagementEventWatcher(insertQuery);
+                insertWatcher.EventArrived += (s, e) =>
+                {
+                    var str = new StringBuilder();
+                    str.Append("插入设备");
 
-                str.Append(description.Name + " = " + description.Value);
+                    var instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
+                    var description = instance.Properties["Description"];
 
-                var deviceId = instance.Properties["DeviceID"];
-                str.Append(deviceId.Name + " = " + deviceId.Value);
+                    str.Append(description.Name + " = " + description.Value);
 
-                Log($"{DateTime.Now} {str.ToString()} {Environment.NewLine}");
-            };
-            insertWatcher.Start();
+                    var deviceId = instance.Properties["DeviceID"];
+                    str.Append(deviceId.Name + " = " + deviceId.Value);
 
-            WqlEventQuery removeQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
-            ManagementEventWatcher removeWatcher = new ManagementEventWatcher(removeQuery);
-            removeWatcher.EventArrived += (s, e) =>
+                    Log($"{DateTime.Now} {str.ToString()} {Environment.NewLine}");
+                };
+                insertWatcher.Start();
+
+                WqlEventQuery removeQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
+                ManagementEventWatcher removeWatcher = new ManagementEventWatcher(removeQuery);
+                removeWatcher.EventArrived += (s, e) =>
+                {
+                    var str = new StringBuilder();
+                    str.Append("移除设备");
+
+                    var instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
+                    var description = instance.Properties["Description"];
+
+                    str.Append(description.Name + " = " + description.Value);
+
+                    var deviceId = instance.Properties["DeviceID"];
+                    str.Append(deviceId.Name + " = " + deviceId.Value);
+
+                    Log($"{DateTime.Now} {str.ToString()} {Environment.NewLine}");
+                };
+                removeWatcher.Start();
+            }
+            catch (Exception e)
             {
-                var str = new StringBuilder();
-                str.Append("移除设备");
-
-                var instance = (ManagementBaseObject) e.NewEvent["TargetInstance"];
-                var description = instance.Properties["Description"];
-
-                str.Append(description.Name + " = " + description.Value);
-
-                var deviceId = instance.Properties["DeviceID"];
-                str.Append(deviceId.Name + " = " + deviceId.Value);
-
-                Log($"{DateTime.Now} {str.ToString()} {Environment.NewLine}");
-            };
-            removeWatcher.Start();
+                // 忽略
+            }
         }
 
         private Storyboard StylusDownStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.StylusDown");
