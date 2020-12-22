@@ -88,7 +88,7 @@ namespace ManipulationDemo
             }
             catch (Exception e)
             {
-            
+                // 忽略
             }
         }
 
