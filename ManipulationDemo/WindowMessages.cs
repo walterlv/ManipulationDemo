@@ -717,6 +717,73 @@ namespace ManipulationDemo
         /// An application sends the WM_MDIREFRESHMENU message to a multiple-document interface (MDI) client window to refresh the window menu of the MDI frame window. 
         /// </summary>
         MDIREFRESHMENU = 0x0234,
+
+        /// <summary>
+        ///     Sent to a window when there is a change in the settings of a monitor that has a digitizer attached to it. This
+        ///     message contains information regarding the scaling of the display mode
+        /// </summary>
+        WM_POINTERDEVICECHANGE = 0x0238,
+
+        /// <summary>
+        ///     Sent to a window when a pointer device is detected within range of an input digitizer. This message contains
+        ///     information regarding the device and its proximity
+        /// </summary>
+        WM_POINTERDEVICEINRANGE = 0x0239,
+
+        /// <summary>
+        ///     Sent to a window when a pointer device has departed the range of an input digitizer. This message contains
+        ///     information regarding the device and its proximity
+        /// </summary>
+        WM_POINTERDEVICEOUTOFRANGE = 0x023a,
+
+        /// <summary>
+        ///     Posted to provide an update on a pointer that made contact over the client area of a window or on a hovering
+        ///     uncaptured pointer over the client area of a window. While the pointer is hovering, the message targets whichever
+        ///     window the pointer happens to be over. While the pointer is in contact with the surface, the pointer is implicitly
+        ///     captured to the window over which the pointer made contact and that window continues to receive input for the
+        ///     pointer until it breaks contact
+        /// </summary>
+        WM_POINTERUPDATE = 0x0245,
+
+        /// <summary>
+        ///     Posted when a pointer makes contact over the client area of a window. This input message targets the window over
+        ///     which the pointer makes contact, and the pointer is implicitly captured to the window so that the window continues
+        ///     to receive input for the pointer until it breaks contact
+        /// </summary>
+        WM_POINTERDOWN = 0x0246,
+
+        /// <summary>
+        ///     Posted when a pointer that made contact over the client area of a window breaks contact. This input message targets
+        ///     the window over which the pointer makes contact and the pointer is, at that point, implicitly captured to the
+        ///     window so that the window continues to receive input messages including the WM_POINTERUP notification for the
+        ///     pointer until it breaks contact
+        /// </summary>
+        WM_POINTERUP = 0x0247,
+
+        /// <summary>
+        ///     Sent to a window when a new pointer enters detection range over the window (hover) or when an existing pointer
+        ///     moves within the boundaries of the window
+        /// </summary>
+        WM_POINTERENTER = 0x0249,
+
+        /// <summary>
+        ///     Sent to a window when a pointer leaves detection range over the window (hover) or when a pointer moves outside the
+        ///     boundaries of the window
+        /// </summary>
+        WM_POINTERLEAVE = 0x024a,
+
+        /// <summary>
+        ///     Sent to an inactive window when a primary pointer generates a WM_POINTERDOWN over the window. As long as the
+        ///     message remains unhandled, it travels up the parent window chain until it is reaches the top-level window.
+        ///     Applications can respond to this message to specify whether they wish to be activated
+        /// </summary>
+        WM_POINTERACTIVATE = 0x024b,
+
+        /// <summary>
+        ///     Sent to a window that is losing capture of an input pointer
+        /// </summary>
+        WM_POINTERCAPTURECHANGED = 0x024c,
+
         /// <summary>
         /// Sent to an application when a window is activated. A window receives this message through its WindowProc function. 
         /// </summary>

@@ -44,7 +44,7 @@ namespace ManipulationDemo
             _timer.Start();
 
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
-        
+
             try
             {
                 WqlEventQuery insertQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
@@ -53,9 +53,9 @@ namespace ManipulationDemo
                 insertWatcher.EventArrived += (s, e) =>
                 {
                     var str = new StringBuilder();
-                    str.Append("插入设备");
+                    str.Append("[WMI]插入设备");
 
-                    var instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
+                    var instance = (ManagementBaseObject) e.NewEvent["TargetInstance"];
                     var description = instance.Properties["Description"];
 
                     str.Append(description.Name + " = " + description.Value);
@@ -72,9 +72,9 @@ namespace ManipulationDemo
                 removeWatcher.EventArrived += (s, e) =>
                 {
                     var str = new StringBuilder();
-                    str.Append("移除设备");
+                    str.Append("[WMI]移除设备");
 
-                    var instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
+                    var instance = (ManagementBaseObject) e.NewEvent["TargetInstance"];
                     var description = instance.Properties["Description"];
 
                     str.Append(description.Name + " = " + description.Value);
@@ -93,17 +93,17 @@ namespace ManipulationDemo
         }
 
         private Storyboard StylusDownStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.StylusDown");
-        private Storyboard StylusMoveStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.StylusMove");
-        private Storyboard StylusUpStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.StylusUp");
-        private Storyboard TouchDownStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.TouchDown");
-        private Storyboard TouchMoveStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.TouchMove");
-        private Storyboard TouchUpStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.TouchUp");
-        private Storyboard MouseDownStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.MouseDown");
-        private Storyboard MouseMoveStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.MouseMove");
-        private Storyboard MouseUpStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.MouseUp");
-        private Storyboard ManipulationStartedStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.ManipulationStarted");
-        private Storyboard ManipulationDeltaStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.ManipulationDelta");
-        private Storyboard ManipulationCompletedStoryboard => (Storyboard)IndicatorPanel.FindResource("Storyboard.ManipulationCompleted");
+        private Storyboard StylusMoveStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.StylusMove");
+        private Storyboard StylusUpStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.StylusUp");
+        private Storyboard TouchDownStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.TouchDown");
+        private Storyboard TouchMoveStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.TouchMove");
+        private Storyboard TouchUpStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.TouchUp");
+        private Storyboard MouseDownStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.MouseDown");
+        private Storyboard MouseMoveStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.MouseMove");
+        private Storyboard MouseUpStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.MouseUp");
+        private Storyboard ManipulationStartedStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.ManipulationStarted");
+        private Storyboard ManipulationDeltaStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.ManipulationDelta");
+        private Storyboard ManipulationCompletedStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.ManipulationCompleted");
 
         private readonly DispatcherTimer _timer;
 
@@ -242,16 +242,18 @@ namespace ManipulationDemo
             // 检查硬件设备插拔。
             if (msg == (int) WindowMessages.DEVICECHANGE)
             {
-                Log(DeviceChangeListenerTextBlock, $"设备发生插拔 0x{wparam.ToString("X4")} - 0x{lparam.ToString("X4")}", true);
+                var eventText = $"Event={(WindowsMessageDeviceChangeEventEnum)wparam}";
+
+                Log(DeviceChangeListenerTextBlock, $"[WM_DEVICECHANGE]设备发生插拔 0x{wparam.ToString("X4")}-0x{lparam.ToString("X4")};{eventText}", true);
                 LogDevices();
             }
             else if (msg == (int) WindowMessages.TABLET_ADDED)
             {
-                Log(DeviceChangeListenerTextBlock, $"触摸设备插入 0x{wparam.ToString("X4")} - 0x{lparam.ToString("X4")}", true);
+                Log(DeviceChangeListenerTextBlock, $"[TABLET_ADDED]触摸设备插入 0x{wparam.ToString("X4")} - 0x{lparam.ToString("X4")}", true);
             }
             else if (msg == (int) WindowMessages.TABLET_DELETED)
             {
-                Log(DeviceChangeListenerTextBlock, $"触摸设备拔出 0x{wparam.ToString("X4")} - 0x{lparam.ToString("X4")}", true);
+                Log(DeviceChangeListenerTextBlock, $"[TABLET_DELETED]触摸设备拔出 0x{wparam.ToString("X4")} - 0x{lparam.ToString("X4")}", true);
             }
 
             // 输出消息。
@@ -260,7 +262,7 @@ namespace ManipulationDemo
                 return IntPtr.Zero;
             }
 
-            var formattedMessage = $"{(WindowMessages)msg}";
+            var formattedMessage = $"{(WindowMessages) msg}({msg})";
             Log(HwndMsgTextBlock, formattedMessage);
 
             return IntPtr.Zero;
@@ -361,8 +363,24 @@ namespace ManipulationDemo
         private readonly object _locker = new object();
 
         private static readonly Lazy<List<int>> UnnecessaryMsgsLazy =
-            new Lazy<List<int>>(() => Settings.Default.IgnoredMsgs.Split(',').Select(int.Parse).ToList());
+            new Lazy<List<int>>(() => Settings.Default.IgnoredMsgs.Split(',').Where(t => !string.IsNullOrWhiteSpace(t)).Select(s => int.Parse(s)).ToList());
 
         private static List<int> UnnecessaryMsgs => UnnecessaryMsgsLazy.Value;
+    }
+
+    enum WindowsMessageDeviceChangeEventEnum
+    {
+        DBT_DEVNODES_CHANGED = 0x0007,
+        DBT_QUERYCHANGECONFIG = 0x0017,
+        DBT_CONFIGCHANGED = 0x0018,
+        DBT_CONFIGCHANGECANCELED = 0x0019,
+        DBT_DEVICEARRIVAL = 0x8000,
+        DBT_DEVICEQUERYREMOVE = 0x8001,
+        DBT_DEVICEQUERYREMOVEFAILED = 0x8002,
+        DBT_DEVICEREMOVEPENDING = 0x8003,
+        DBT_DEVICEREMOVECOMPLETE = 0x8004,
+        DBT_DEVICETYPESPECIFIC = 0x8005,
+        DBT_CUSTOMEVENT = 0x8006,
+        DBT_USERDEFINED = 0xFFFF,
     }
 }

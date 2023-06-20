@@ -15,7 +15,7 @@
         </Style>
     </Window.Style>
     <Grid>
-        <Rectangle x:Name="DrawingArea" Fill="White"
+        <InkCanvas x:Name="DrawingArea" 
                    PreviewStylusDown="OnStylusDown"
                    PreviewStylusMove="OnStylusMove"
                    PreviewStylusUp="OnStylusUp"
