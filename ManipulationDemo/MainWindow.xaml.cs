@@ -15,7 +15,6 @@ using System.Management;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 
 namespace ManipulationDemo
 {
@@ -91,19 +90,7 @@ namespace ManipulationDemo
             {
                 // 忽略
             }
-
-            Loaded += MainWindow_Loaded;
         }
-
-        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            await Task.Delay(TimeSpan.FromSeconds(1));
-            var windowInteropHelper = new WindowInteropHelper(this);
-            SendMessage(windowInteropHelper.Handle, (uint)WindowMessages.TABLET_ADDED, IntPtr.Zero, IntPtr.Zero);
-        }
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
         private Storyboard StylusDownStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.StylusDown");
         private Storyboard StylusMoveStoryboard => (Storyboard) IndicatorPanel.FindResource("Storyboard.StylusMove");
